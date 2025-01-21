@@ -1,12 +1,11 @@
-vim.opt_local.spell = true
-vim.opt_local.expandtab = true
+local goroup = augroup("goroup", { clear = false })
 
 autocmd("BufWritePre", {
 	callback = function()
 		local params = vim.lsp.util.make_range_params(0, "utf-8")
 		---@diagnostic disable-next-line: inject-field
 		params.context = { only = { "source.organizeImports" } }
-		local result = vim.lsp.buf_request_sync(0, "textDocument/codeAction", params)
+		local result = vim.lsp.buf_request_sync(0, vim.lsp.protocol.Methods.textDocument_codeAction, params)
 		for cid, res in pairs(result or {}) do
 			for _, r in pairs(res.result or {}) do
 				if r.edit then
@@ -19,10 +18,27 @@ autocmd("BufWritePre", {
 	end
 })
 
-vim.keymap.set("o", "ll", function()
-	if vim.v.operator ~= 'y' then
-		return
-	end
+autocmd("LspAttach", {
+	group = goroup,
+	callback = function (args)
+		local gopath = vim.fn.trim(vim.fn.system("go env GOPATH"))
+		local goroot = vim.fn.trim(vim.fn.system("go env GOROOT"))
+		gopath = vim.fs.joinpath(gopath, "pkg", "mod")
+		goroot = vim.fs.joinpath(goroot, "src")
 
-	vim.fn.setreg("+", string.format("%s:%d", vim.fn.expand("%"), vim.fn.line(".")))
-end)
+		vim.keymap.set("o", "ll", function()
+			if vim.v.operator ~= 'y' then
+				return
+			end
+
+			local raw = vim.fn.expand("%")
+			local file = vim.fs.relpath(goroot, raw)
+			if not file then
+				file = vim.fs.relpath(gopath, raw)
+				file = file or raw
+			end
+
+			vim.fn.setreg("+", string.format("%s:%d", file, vim.fn.line(".")))
+		end, {buffer = args.buf})
+	end
+})
