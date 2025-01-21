@@ -62,7 +62,7 @@ has "gopls" {
 					assignVariableTypes = true,
 					compositeLiteralFields = true,
 					constantValues = true,
-					functionTypeParameters = true,
+					-- functionTypeParameters = true,
 					rangeVariableTypes = true,
 				}
 			},
