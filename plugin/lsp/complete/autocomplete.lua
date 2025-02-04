@@ -37,11 +37,6 @@ local kind_icon = {
 	{ menu = 'TypeParameter', kind = '', kind_hlgroup = 'Type' },
 }
 
-local function convert(item)
-	local m = kind_icon[item.kind]
-	return { abbr = item.label, kind = m.kind, kind_hlgroup = m.kind_hlgroup, abbr_hlgroup = "Tag" }
-end
-
 autocmd("InsertCharPre", {
 	group = auto_completion,
 	desc = 'autcomplete path',
@@ -82,7 +77,15 @@ autocmd('LspAttach', {
 		end
 
 		vim.lsp.completion.enable(true, args.data.client_id, args.buf, {
-			convert = convert
+			convert = function(item)
+				local m = kind_icon[item.kind]
+				return {
+					abbr = item.label,
+					kind = m.kind,
+					kind_hlgroup = m.kind_hlgroup,
+					abbr_hlgroup = "Tag"
+				}
+			end
 		})
 	end,
 })
