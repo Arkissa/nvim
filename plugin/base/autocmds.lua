@@ -16,9 +16,19 @@ autocmd("BufReadPost", {
 	end
 })
 
-autocmd('TextYankPost', {
+autocmd("TextYankPost", {
 	group = myvimrc,
 	callback = function()
 		vim.hl.on_yank()
 	end,
+})
+
+autocmd("WinEnter", {
+	group = myvimrc,
+	command = "setlocal cursorline"
+})
+
+autocmd("WinLeave", {
+	group = myvimrc,
+	command = "setlocal nocursorline"
 })

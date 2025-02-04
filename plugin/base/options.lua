@@ -1,4 +1,5 @@
 local opt = vim.opt
+local opt_local = vim.opt_local
 local k = vim.keycode
 local g = vim.g
 
@@ -10,8 +11,10 @@ opt.smartindent = true
 opt.undofile = true
 opt.ruler = false
 opt.spelllang:append "cjk"
-opt.cursorline = true
+opt_local.cursorline = true
 opt.autowrite = true
+opt.showmode = false
+-- opt.cmdheight = 0
 opt.fillchars = {
 	fold = "-",
 	eob = " ",
@@ -20,7 +23,8 @@ opt.fillchars = {
 opt.list = true
 opt.showbreak = "↪ "
 opt.listchars = {
-	tab = '› ',
+	-- tab = '› ',
+	tab = '│ ',
 	trail = '·',
 }
 opt.shiftwidth = 4
