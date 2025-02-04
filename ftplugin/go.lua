@@ -18,23 +18,23 @@ autocmd("BufWritePre", {
 	end
 })
 
-autocmd("LspAttach", {
-	group = goroup,
-	callback = function (args)
-		local gopath = vim.fn.trim(vim.fn.system("go env GOPATH"))
-		local goroot = vim.fn.trim(vim.fn.system("go env GOROOT"))
-		gopath = vim.fs.joinpath(gopath, "pkg", "mod")
-		goroot = vim.fs.joinpath(goroot, "src")
+if vim.fn.exists('+clipboard') then
+	autocmd("LspAttach", {
+		group = goroup,
+		callback = function(args)
+			local gopath = vim.fs.joinpath(vim.fn.trim(vim.fn.system("go env GOPATH")), "pkg", "mod")
+			local goroot = vim.fs.joinpath(vim.fn.trim(vim.fn.system("go env GOROOT")), "src")
 
-		vim.keymap.set("o", "ll", function()
-			if vim.v.operator ~= 'y' then
-				return
-			end
+			vim.keymap.set("o", "ll", function()
+				if vim.v.operator ~= 'y' then
+					return
+				end
 
-			local raw = vim.fn.expand("%")
-			local file = vim.fs.relpath(goroot, raw) or vim.fs.relpath(gopath, raw) or raw
+				local raw = vim.fn.expand("%")
+				local file = vim.fs.relpath(goroot, raw) or vim.fs.relpath(gopath, raw) or raw
 
-			vim.fn.setreg("+", string.format("%s:%d", file, vim.fn.line(".")))
-		end, {buffer = args.buf})
-	end
-})
+				vim.fn.setreg("+", string.format("%s:%d", file, vim.fn.line(".")))
+			end, { buffer = args.buf })
+		end
+	})
+end
