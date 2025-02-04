@@ -1,6 +1,7 @@
 local goroup = augroup("goroup", { clear = false })
 
 autocmd("BufWritePre", {
+	desc = "format .go file on save",
 	callback = function()
 		local params = vim.lsp.util.make_range_params(0, "utf-8")
 		---@diagnostic disable-next-line: inject-field
@@ -18,8 +19,10 @@ autocmd("BufWritePre", {
 	end
 })
 
+-- This for set breakpoint on dlv, very very useful.
 if vim.fn.exists('+clipboard') then
 	autocmd("LspAttach", {
+		desc = "Copy the file path of cursor under the line in .go file",
 		group = goroup,
 		callback = function(args)
 			local gopath = vim.fs.joinpath(vim.fn.trim(vim.fn.system("go env GOPATH")), "pkg", "mod")
