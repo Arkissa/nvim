@@ -32,11 +32,7 @@ autocmd("LspAttach", {
 			end
 
 			local raw = vim.fn.expand("%")
-			local file = vim.fs.relpath(goroot, raw)
-			if not file then
-				file = vim.fs.relpath(gopath, raw)
-				file = file or raw
-			end
+			local file = vim.fs.relpath(goroot, raw) or vim.fs.relpath(gopath, raw) or raw
 
 			vim.fn.setreg("+", string.format("%s:%d", file, vim.fn.line(".")))
 		end, {buffer = args.buf})
