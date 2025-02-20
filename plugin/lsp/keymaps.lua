@@ -37,10 +37,6 @@ local function attach_keymaps(client, bufnr)
 	if client:supports_method(methods.textDocument_signatureHelp) then
 		set("i", "<C-s>", with(lsp.signature_help, { border = 'rounded', max_width = 60 }), opts)
 	end
-
-	if client:supports_method(methods.textDocument_documentSymbol) then
-		set("n", "<LEADER>o", lsp.document_symbol, opts)
-	end
 end
 
 autocmd("LspAttach", {

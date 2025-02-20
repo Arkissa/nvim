@@ -83,7 +83,7 @@ autocmd('LspAttach', {
 					abbr = item.label,
 					kind = m.kind,
 					kind_hlgroup = m.kind_hlgroup,
-					abbr_hlgroup = "Tag"
+					-- abbr_hlgroup = "Tag"
 				}
 			end
 		})

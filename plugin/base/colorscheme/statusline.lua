@@ -1,7 +1,6 @@
 local statusline = require 'lualine'
 
-local colors = require "catppuccin.palettes".get_palette "mocha"
-
+local colors = require "catppuccin.palettes".get_palette("mocha")
 local conditions = {
 	buffer_not_empty = function()
 		return vim.fn.empty(vim.fn.expand('%:t')) ~= 1
@@ -90,7 +89,7 @@ ins_left {
 	function()
 		return ''
 	end,
-	color = function ()
+	color = function()
 		return { fg = mode_color[vim.fn.mode()] }
 	end,
 	padding = { right = 1, left = 0 },

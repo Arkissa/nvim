@@ -4,7 +4,6 @@ require 'nvim-treesitter.configs'.setup {
 	ensure_installed = {
 		"c",
 		"rust",
-		"latex",
 		"lua",
 		"vim",
 		"vimdoc",
@@ -26,8 +25,6 @@ require 'nvim-treesitter.configs'.setup {
 		"yaml",
 		"toml",
 		"proto",
-		"norg",
-		"css",
 		"sql",
 		"json",
 		"bash",
@@ -45,11 +42,10 @@ require 'nvim-treesitter.configs'.setup {
 	incremental_selection = {
 		enable = true,
 		keymaps = {
-			init_selection = 'gnn',
+			init_selection = 'vin',
 			-- below are vmap
-			node_incremental = 'gnk',
-			node_decremental = 'gnj',
-			scope_incremental = 'gna',
+			node_incremental = 'vik',
+			node_decremental = 'vij',
 		},
 	},
 	indent = {

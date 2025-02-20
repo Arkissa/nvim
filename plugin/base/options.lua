@@ -38,6 +38,7 @@ opt.ignorecase = true
 opt.wildmenu = true
 opt.mouse = ""
 opt.shortmess:append "c"
+opt.guicursor = "c-sm:block,i-ci-ve:ver25,n-v-r-cr-o:hor20,t:block-blinkon500-blinkoff500-TermCursor"
 vim.opt.wildignore:append {
 	'*.o',
 	'**/dist-newstyle/**',
