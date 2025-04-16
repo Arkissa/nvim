@@ -37,31 +37,31 @@ local kind_icon = {
 	{ menu = 'TypeParameter', kind = '', kind_hlgroup = 'Type' },
 }
 
-autocmd("InsertCharPre", {
-	group = auto_completion,
-	desc = 'autcomplete path',
-	callback = function()
-		if vim.opt.filetype:get() == "oil"
-			or pumvisible() == 1
-			or vim.fn.state 'm' == 'm'
-		then
-			return
-		end
-
-		local char = vim.v.char
-
-		if char:match("[^%w.]") then
-			return
-		end
-
-		if vim.opt.omnifunc:get() == "" then
-			feedkeys(shorcut.keyword, "im", false)
-			return
-		end
-
-		feedkeys(shorcut.omnifunc, "im", false)
-	end
-})
+-- autocmd("InsertCharPre", {
+-- 	group = auto_completion,
+-- 	desc = 'autcomplete path',
+-- 	callback = function()
+-- 		if vim.opt.filetype:get() == "oil"
+-- 			or pumvisible() == 1
+-- 			or vim.fn.state 'm' == 'm'
+-- 		then
+-- 			return
+-- 		end
+--
+-- 		local char = vim.v.char
+--
+-- 		if char:match("[^%w.]") then
+-- 			return
+-- 		end
+--
+-- 		if vim.opt.omnifunc:get() == "" then
+-- 			feedkeys(shorcut.keyword, "im", false)
+-- 			return
+-- 		end
+--
+-- 		feedkeys(shorcut.omnifunc, "im", false)
+-- 	end
+-- })
 
 autocmd('LspAttach', {
 	desc = 'autocomplete lsp',

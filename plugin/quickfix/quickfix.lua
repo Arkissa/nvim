@@ -1,7 +1,7 @@
 local qf = augroup("qf", { clear = false })
 
 vim.api.nvim_create_user_command("Vimgrep", function (args)
-	vim.cmd.vimgrep({ args = { string.format("/%s/j", args.args), "**/*" }, mods = { silent = true } })
+	vim.cmd.vimgrep({ args = { string.format("/%s/gj", args.args), "**/*" }, mods = { silent = true } })
 end, { nargs = 1 })
 
 autocmd("QuickFixCmdPost", {
