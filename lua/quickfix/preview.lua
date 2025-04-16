@@ -1,0 +1,215 @@
+---@class Quickfix
+---@field private _winnr integer
+---@field private _bufnr integer
+---@field private _list table
+---@field private _float_win quickfix.FloatWin
+local qf = {}
+qf.__index = qf
+
+local ns_id = vim.api.nvim_create_namespace("quickfix")
+local qfgroup = vim.api.nvim_create_augroup("qf", { clear = false })
+
+---@return integer
+local function get_cursor_lnum()
+	return vim.api.nvim_win_get_cursor(qf._winnr)[1]
+end
+
+---@param item table | nil
+---@return table|nil pos
+local function get_pos(item)
+	if item == nil then
+		return nil
+	end
+
+	local lnum = item.lnum == 0 and 0 or item.lnum - 1
+	local col = item.col == 0 and 0 or item.col - 1
+	local end_row = item.end_lnum == 0 and 0 or item.end_lnum - 1
+	local end_col = item.end_col == 0 and 0 or item.end_col - 1
+
+	return {
+		lnum = lnum,
+		col = col,
+		end_row = end_row,
+		end_col = end_col,
+	}
+end
+
+---@return integer
+local function set_buf_hl(bufnr, pos)
+	return vim.api.nvim_buf_set_extmark(bufnr, ns_id, pos.lnum, pos.col, {
+		hl_group = "IncSearch",
+		end_col = pos.end_col,
+		end_row = pos.end_row,
+	})
+end
+
+---@param item table
+---@return string | nil
+local function preview_title(item)
+	local bname = vim.api.nvim_buf_get_name(item.bufnr)
+	return string.format(" [%d/%d] buf %d: %s %s ",
+		item.lnum,                                                                   -- position number of line
+		vim.api.nvim_buf_line_count(item.bufnr),                                     -- position number of col
+		item.bufnr,                                                                  -- bufnr
+		vim.fs.relpath(vim.fn.getcwd(), bname) or bname:gsub('^' .. vim.env.HOME, "~", 1), -- name of preview file
+		vim.bo[item.bufnr].modified and '[+] ' or ''                                 -- buffer modified status
+	)
+end
+
+---@param float quickfix.FloatWin
+---@param list table
+local function set_buf_with_under_cursor(float, list)
+	if vim.tbl_isempty(list) then
+		return
+	end
+	local item = list[get_cursor_lnum()]
+	if item.nr == -1 then
+		return vim.notify("can't preview this item", vim.log.levels.ERROR)
+	end
+
+	float:set_buf(item.bufnr)
+	local title = preview_title(item)
+	if title == nil then
+		return
+	end
+
+	float:set_title({ {title, "FloatBorder"} })
+	float:set_cursor(item.lnum, item.col)
+	float:feedkeys("zz")
+end
+
+---@param winnr integer
+---@param nsid integer
+---@return quickfix.FloatWin
+local function float_open(winnr, nsid)
+	local f = require "quickfix.float".open(winnr)
+	f:on_buf_before(function(bufnr)
+		vim.api.nvim_buf_clear_namespace(bufnr, ns_id, 0, -1)
+	end)
+
+	f:on_buf_post(function(bufnr)
+		local pos = get_pos(qf._list[get_cursor_lnum()])
+		if pos == nil then
+			return
+		end
+
+		set_buf_hl(bufnr, pos)
+	end)
+
+	f:on_close(function(args)
+		vim.api.nvim_buf_clear_namespace(args[2], nsid, 0, -1)
+	end)
+
+	return f
+end
+
+local function float_close()
+	qf._float_win:close()
+	qf._float_win = nil
+end
+
+---@return integer
+local function create_qfwin_quit(bufnr)
+	return vim.api.nvim_create_autocmd({ "WinLeave", "WinClosed", "WinLeave", "BufWipeout", "BufHidden" }, {
+		group = qfgroup,
+		buffer = bufnr,
+		callback = function()
+			if qf._float_win then
+				float_close()
+			end
+		end
+	})
+end
+
+---@return integer
+local function create_qfwin_cursor_moved(bufnr)
+	return vim.api.nvim_create_autocmd("CursorMoved", {
+		group = qfgroup,
+		buffer = bufnr,
+		callback = function()
+			pcall(set_buf_with_under_cursor, qf._float_win, qf._list)
+		end
+	})
+end
+
+local function hook_cr()
+	vim.on_key(function(key, _)
+		if vim.api.nvim_get_current_win() ~= qf._winnr then
+			return
+		end
+
+		if vim.fn.keytrans(key) == "<CR>" and qf._float_win then
+			return float_close()
+		end
+	end, ns_id)
+
+	qf._float_win:on_close(function(_)
+		vim.on_key(nil, ns_id)
+	end)
+
+end
+
+---@param float quickfix.FloatWin
+---@param bufnr integer
+---@param key string
+---@param command string
+local function create_keymap(float, bufnr, key, command)
+	vim.keymap.set('n', key, function ()
+		float:feedkeys(command)
+	end, { noremap = true, silent = true, buffer = bufnr })
+
+	float:on_close(function (_)
+		vim.keymap.del('n', key, { buffer = bufnr })
+	end)
+end
+
+---@param float quickfix.FloatWin
+local function create_autocmd(float, bufnr)
+	local autocmd_ids = {}
+	table.insert(autocmd_ids, create_qfwin_quit(bufnr))
+	table.insert(autocmd_ids, create_qfwin_cursor_moved(bufnr))
+
+	float:on_close(function(_)
+		for _, id in ipairs(autocmd_ids) do
+			pcall(vim.api.nvim_del_autocmd, id)
+		end
+	end)
+end
+
+local function create_toggle_floatwin(bufnr)
+	vim.keymap.set('n', "K", function ()
+		if vim.tbl_isempty(qf._list) then
+			return vim.notify("list is empty.", vim.log.levels.ERROR)
+		end
+
+		if qf._float_win then
+			return float_close()
+		end
+
+		qf._float_win = float_open(qf._winnr, ns_id)
+
+		hook_cr()
+		create_autocmd(qf._float_win, bufnr)
+		create_keymap(qf._float_win, bufnr, "<C-u>", "zz") -- scroll up a half page on floating preview window
+		create_keymap(qf._float_win, bufnr, "<C-d>", "zz") -- scrool down a half page on floating preview window
+		create_keymap(qf._float_win, bufnr, "gg", "gg") -- go to top line on floating preview window
+		create_keymap(qf._float_win, bufnr, "G", "G") -- go to top line on floating preview window
+		set_buf_with_under_cursor(qf._float_win, qf._list)
+	end, { noremap = true, buffer = bufnr })
+end
+
+function qf.preview_on_float(winnr)
+	local winfo = vim.fn.getwininfo(winnr)[1]
+	if winfo.quickfix == 0 then
+		return
+	end
+
+	qf._winnr = winnr
+	qf._bufnr = vim.api.nvim_win_get_buf(winnr)
+	qf._list = winfo.loclist == 1
+		and vim.fn.getloclist(vim.fn.bufnr('#'))
+		or vim.fn.getqflist()
+	create_toggle_floatwin(qf._bufnr)
+end
+
+return qf
