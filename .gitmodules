@@ -28,3 +28,6 @@
 [submodule "pack/make/start/vim-dispatch"]
 	path = pack/make/start/vim-dispatch
 	url = https://github.com/tpope/vim-dispatch.git
+[submodule "pack/utils/start/cmdalias"]
+	path = pack/utils/start/cmdalias
+	url = https://github.com/vim-scripts/cmdalias.vim.git
