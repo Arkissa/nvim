@@ -4,16 +4,17 @@ local myvimrc = augroup("MYVIMRC", {
 
 autocmd("BufReadPost", {
 	group = myvimrc,
-	callback = function (_)
+	-- must be wait for filetype seted to run
+	callback = vim.schedule_wrap(function ()
 		local line = vim.fn.line([['"]])
 		local filetype = vim.opt.filetype:get()
 		if  line > 1
 			and line <= vim.fn.line("$")
-			and not vim.tbl_contains({'xxd', 'gitrebase', 'tutor', 'commit'}, filetype)
+			and not vim.tbl_contains({'xxd', 'gitrebase', 'tutor', 'commit', 'help'}, filetype)
 		then
 			vim.api.nvim_input([[g`"]])
 		end
-	end
+	end)
 })
 
 autocmd("TextYankPost", {
