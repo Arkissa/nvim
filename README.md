@@ -1,7 +1,7 @@
 ## Ultimate Goal
 > [!NOTE]
 >
-> Anything will be done without leaving vim!
+> Do Anything Without Leave Vim!
 
 ## Required
 - [nvim >= 0.11](https://github.com/neovim/neovim/releases)
