@@ -22,18 +22,14 @@ function M.open(qfwinnr)
 		col = vim.o.co,
 		row = -1,
 		zindex = 52,
+		style = "minimal",
 		border = "rounded",
 	}
 
 	local winnr = vim.api.nvim_open_win(0, false, win_conf)
 	local wo = vim.wo[winnr]
-	wo.spell, wo.list = false, false
-	wo.nu, wo.rnu = true, false
 	wo.fen, wo.fdm, wo.fdc = false, 'manual', '0'
-	wo.signcolumn = 'no'
-	wo.colorcolumn = ''
 	wo.scrolloff = 0
-	wo.cursorline = false
 
 	return setmetatable({
 		_winnr = winnr,
