@@ -11,7 +11,7 @@ end
 local function attach_keymaps(client, bufnr)
 	local opts = { noremap = true, silent = true, buffer = bufnr }
 	if client:supports_method(methods.textDocument_hover) then
-		set("n", "K", with(lsp.hover, { border = 'rounded', max_height = 30, max_width = 60 }), opts)
+		set("n", "K", lsp.hover, opts)
 	end
 
 	if client:supports_method(methods.textDocument_rename) then
@@ -35,7 +35,7 @@ local function attach_keymaps(client, bufnr)
 	end
 
 	if client:supports_method(methods.textDocument_signatureHelp) then
-		set("i", "<C-s>", with(lsp.signature_help, { border = 'rounded', max_width = 60 }), opts)
+		set("i", "<C-s>", lsp.signature_help, opts)
 	end
 end
 

@@ -49,10 +49,6 @@ autocmd("InsertCharPre", {
 		end
 
 		local char = vim.v.char
-		if char == "/" then
-			feedkeys(shorcut.path, "m", false)
-			return
-		end
 
 		if char:match("[^%w.]") then
 			return

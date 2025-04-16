@@ -21,8 +21,6 @@ local config = {
 	options = {
 		component_separators = '',
 		section_separators = '',
-		-- section_separators = { left = '', right = '' },
-		-- component_separators = { left = '/', right = '\\' },
 		theme = {
 			normal = { c = { fg = colors.fg, bg = colors.bg } },
 			inactive = { c = { fg = colors.fg, bg = colors.bg } },
@@ -85,15 +83,16 @@ ins_left {
 	padding = { left = 0, right = 1 },
 }
 
-ins_left {
-	function()
-		return ''
-	end,
-	color = function()
-		return { fg = mode_color[vim.fn.mode()] }
-	end,
-	padding = { right = 1, left = 0 },
-}
+-- ins_left {
+-- 	function()
+-- 		-- return ''
+-- 		return ''
+-- 	end,
+-- 	color = function()
+-- 		return { fg = mode_color[vim.fn.mode()] }
+-- 	end,
+-- 	-- padding = { right = 1, left = 0 },
+-- }
 
 ins_left { 'mode' }
 

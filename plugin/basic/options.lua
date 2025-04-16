@@ -1,5 +1,4 @@
 local opt = vim.opt
-local opt_local = vim.opt_local
 local k = vim.keycode
 local g = vim.g
 
@@ -11,10 +10,8 @@ opt.smartindent = true
 opt.undofile = true
 opt.ruler = false
 opt.spelllang:append "cjk"
-opt_local.cursorline = true
 opt.autowrite = true
 opt.showmode = false
--- opt.cmdheight = 0
 opt.fillchars = {
 	fold = "-",
 	eob = " ",
@@ -29,7 +26,7 @@ opt.listchars = {
 }
 opt.shiftwidth = 4
 opt.softtabstop = 4
-opt.signcolumn = "yes"
+opt.signcolumn = "yes:1"
 opt.tabstop = 4
 opt.scrolloff = 60
 opt.laststatus = 3
@@ -37,8 +34,10 @@ opt.smartcase = true
 opt.ignorecase = true
 opt.wildmenu = true
 opt.mouse = ""
+opt.numberwidth = 2
 opt.shortmess:append "c"
-opt.guicursor = "c-sm:block,i-ci-ve:ver25,n-v-r-cr-o:hor20,t:block-blinkon500-blinkoff500-TermCursor"
+opt.winborder = "rounded"
+opt.pumheight = 15
 vim.opt.wildignore:append {
 	'*.o',
 	'**/dist-newstyle/**',

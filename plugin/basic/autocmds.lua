@@ -11,7 +11,7 @@ autocmd("BufReadPost", {
 			and line <= vim.fn.line("$")
 			and not vim.tbl_contains({'xxd', 'gitrebase', 'tutor', 'commit'}, filetype)
 		then
-			vim.cmd [[normal! g'"]]
+			vim.api.nvim_input([[g`"]])
 		end
 	end
 })
@@ -23,12 +23,27 @@ autocmd("TextYankPost", {
 	end,
 })
 
-autocmd("WinEnter", {
+autocmd({ "WinEnter", "BufEnter" }, {
 	group = myvimrc,
 	command = "setlocal cursorline"
 })
 
-autocmd("WinLeave", {
+autocmd({ "WinLeave", "BufLeave"}, {
 	group = myvimrc,
 	command = "setlocal nocursorline"
+})
+
+autocmd("TermEnter", {
+	group = myvimrc,
+	command = "setlocal nocursorline"
+})
+
+autocmd("BufEnter", {
+	group = myvimrc,
+	nested = true,
+	callback = function(args)
+		if vim.fn.winnr('$') < 2 and vim.bo[args.buf].buftype ~= '' then
+			vim.cmd "q"
+		end
+	end
 })
