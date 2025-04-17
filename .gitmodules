@@ -4,12 +4,6 @@
 [submodule "pack/catppuccin/start/catppuccin"]
 	path = pack/catppuccin/start/catppuccin
 	url = https://github.com/catppuccin/nvim
-[submodule "pack/quickfix/start/quicker"]
-	path = pack/quickfix/start/quicker
-	url = https://github.com/stevearc/quicker.nvim
-[submodule "pack/lsp/start/nvim-lspconfig"]
-	path = pack/lsp/start/nvim-lspconfig
-	url = https://github.com/neovim/nvim-lspconfig
 [submodule "pack/treesitter/start/nvim-treesitter"]
 	path = pack/treesitter/start/nvim-treesitter
 	url = https://github.com/nvim-treesitter/nvim-treesitter
@@ -19,9 +13,6 @@
 [submodule "pack/git/start/gitsigns.nvim"]
 	path = pack/git/start/gitsigns.nvim
 	url = https://github.com/lewis6991/gitsigns.nvim
-[submodule "pack/explorer/start/oil"]
-	path = pack/explorer/start/oil
-	url = https://github.com/stevearc/oil.nvim
 [submodule "pack/themes/start/nvim-web-devicons"]
 	path = pack/themes/start/nvim-web-devicons
 	url = https://github.com/nvim-tree/nvim-web-devicons
@@ -31,3 +22,6 @@
 [submodule "pack/utils/start/cmdalias"]
 	path = pack/utils/start/cmdalias
 	url = https://github.com/vim-scripts/cmdalias.vim.git
+[submodule "pack/explorer/start/oil.nvim"]
+	path = pack/explorer/start/oil.nvim
+	url = https://github.com/RicardoKovd/oil.nvim.git
