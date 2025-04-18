@@ -37,9 +37,14 @@ end
 ---}
 function Buffer:to_qfitem()
 	local pos = self:last_pos()
-	local lines = vim.api.nvim_buf_get_lines(self:bufnr(), pos[1] - 1, pos[2] - 1, false)
-	if not lines or vim.tbl_isempty(lines) then
-		lines = { "" }
+	local lines = {}
+	if self:is_binary() then
+		lines = { vim.fs.basename(self:name()) }
+	else
+		lines = vim.api.nvim_buf_get_lines(self:bufnr(), pos[1] - 1, pos[2] - 1, false)
+		if not lines or vim.tbl_isempty(lines) then
+			lines = { "" }
+		end
 	end
 
 	return {
@@ -48,20 +53,33 @@ function Buffer:to_qfitem()
 		end_col = pos[2],
 		end_lnum = pos[1],
 		lnum = pos[1],
-		module = "",
 		nr = 0,
-		pattern = "",
 		text = lines[1],
-		type = "",
 		valid = 1,
-		vcol = 0
 	}
 end
 
+function Buffer:load()
+	vim.fn.bufload(self:bufnr())
+end
+
+function Buffer:is_binary()
+	--- https://github.com/Donaldttt/fuzzyy/blob/966122c3f5f3b524c5dbe30e63f2ad7b841a5fba/autoload/fuzzyy/utils/selector.vim#L101C46-L101C53
+	return vim.fn.match(vim.fn.readfile(self:name(), '', 10), [[\%x00]]) ~= -1
+end
+
+function Buffer:get_lines(start, end_start)
+	return vim.api.nvim_buf_get_lines(self:bufnr(), start, end_start, false)
+end
+
+function Buffer:is_loaded()
+	return vim.api.nvim_buf_is_loaded(self:bufnr())
+end
+
 return setmetatable({}, {
-	---@param bufnr integer
+	---@param b integer|string
 	---@return buffers.Buffer
-	__call = function (_, bufnr)
-		return setmetatable({ _bufnr = bufnr }, Buffer)
+	__call = function(_, b)
+		return setmetatable({ _bufnr = type(b) == "string" and vim.fn.bufadd(b) or b }, Buffer)
 	end
 }) --[[@as BufferMod]]

@@ -47,13 +47,21 @@ end
 ---@return string | nil
 local function preview_title(item)
 	local bname = vim.api.nvim_buf_get_name(item.bufnr)
-	return string.format(" [%d/%d] buf %d: %s %s ",
+	-- https://github.com/kevinhwang91/nvim-bqf/blob/e20417d5e589e03eaaaadc4687904528500608be/lua/bqf/preview/floatwin.lua#L183
+	return (" [%d/%d] buf %d: %s %s"):format(
 		item.lnum,                                                                   -- position number of line
 		vim.api.nvim_buf_line_count(item.bufnr),                                     -- position number of col
 		item.bufnr,                                                                  -- bufnr
-		vim.fs.relpath(vim.fn.getcwd(), bname) or bname:gsub('^' .. vim.env.HOME, "~", 1), -- name of preview file
-		vim.bo[item.bufnr].modified and '[+] ' or ''                                 -- buffer modified status
+		vim.fs.relpath(vim.fn.getcwd(), bname) or bname:gsub('^' .. vim.env.HOME, '~', 1), -- name of preview file
+		vim.bo[item.bufnr].modified and "[+]" or ''                                 -- buffer modified status
 	)
+end
+
+---@param fname string
+---@return true
+local function is_binary(fname)
+	--- https://github.com/Donaldttt/fuzzyy/blob/966122c3f5f3b524c5dbe30e63f2ad7b841a5fba/autoload/fuzzyy/utils/selector.vim#L101C46-L101C53
+	return vim.fn.match(vim.fn.readfile(fname, '', 10), [[\%x00]]) ~= -1
 end
 
 ---@param float quickfix.FloatWin
@@ -62,8 +70,11 @@ local function set_buf_with_under_cursor(float, list)
 	if vim.tbl_isempty(list) then
 		return
 	end
+
 	local item = list[get_cursor_lnum()]
-	if item.nr == -1 then
+	local bname = vim.api.nvim_buf_get_name(item.bufnr)
+
+	if item.nr == -1 or is_binary(bname) then
 		return vim.notify("can't preview this item", vim.log.levels.ERROR)
 	end
 
