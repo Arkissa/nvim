@@ -41,7 +41,7 @@ function Buffer:to_qfitem()
 	if self:is_binary() then
 		lines = { vim.fs.basename(self:name()) }
 	else
-		lines = vim.api.nvim_buf_get_lines(self:bufnr(), pos[1] - 1, pos[2] - 1, false)
+		lines = vim.api.nvim_buf_get_lines(self:bufnr(), pos[1] - 1, pos[1], false)
 		if not lines or vim.tbl_isempty(lines) then
 			lines = { "" }
 		end
