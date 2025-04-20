@@ -10,7 +10,7 @@ local function win_open(height, width, title)
 		row = 1,
 		col = -1,
 		height = height,
-		width = math.min(100, width),
+		width = math.min(200, math.max(50, width)),
 		style = "minimal",
 		border = "rounded",
 		title = { { (" %s "):format(vim.trim(title)), "FloatBorder"} },
