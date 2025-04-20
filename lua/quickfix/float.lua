@@ -1,9 +1,9 @@
 ---@class quickfix.FloatWin
 ---@field private _winnr integer
 ---@field private _win_conf vim.api.keyset.win_config
----@field private _on_buf_before fun(bufnr: integer)[]
----@field private _on_buf_post fun(bufnr: integer)[]
----@field private _on_close fun(args: [integer, integer])[]
+---@field private _on_buf_before fun(args: {winnr: integer, bufnr: integer})[]
+---@field private _on_buf_post fun(args: {winnr: integer, bufnr: integer})[]
+---@field private _on_close fun(args: {winnr: integer, bufnr: integer})[]
 local FloatWin = {}
 FloatWin.__index = FloatWin
 
@@ -22,7 +22,6 @@ function M.open(qfwinnr)
 		col = vim.o.co,
 		row = -1,
 		zindex = 52,
-		style = "minimal",
 		border = "rounded",
 	}
 
@@ -30,6 +29,7 @@ function M.open(qfwinnr)
 	local wo = vim.wo[winnr]
 	wo.fen, wo.fdm, wo.fdc = false, 'manual', '0'
 	wo.scrolloff = 0
+	wo.signcolumn = "no"
 
 	return setmetatable({
 		_winnr = winnr,
@@ -43,13 +43,13 @@ end
 ---@param bufnr integer
 function FloatWin:set_buf(bufnr)
 	for _, f in ipairs(self._on_buf_before) do
-		f(vim.api.nvim_win_get_buf(self._winnr))
+		f({ winnr = self._winnr, bufnr = vim.api.nvim_win_get_buf(self._winnr)})
 	end
 
 	vim.api.nvim_win_set_buf(self._winnr, bufnr)
 
 	for _, f in ipairs(self._on_buf_post) do
-		f(bufnr)
+		f({ winnr = self._winnr, bufnr = bufnr })
 	end
 end
 
@@ -65,24 +65,24 @@ function FloatWin:set_cursor(lnum, col)
 	vim.api.nvim_win_set_cursor(self._winnr, { lnum, col })
 end
 
----@param f fun(bufnr: integer)
+---@param f fun(args: {winnr: integer, bufnr: integer})
 function FloatWin:on_buf_before(f)
 	table.insert(self._on_buf_before, f)
 end
 
----@param f fun(bufnr: integer)
+---@param f fun(args: {winnr: integer, bufnr: integer})
 function FloatWin:on_buf_post(f)
 	table.insert(self._on_buf_post, f)
 end
 
----@param f fun(args: [integer, integer])
+---@param f fun(args: {winnr: integer, bufnr: integer})
 function FloatWin:on_close(f)
 	table.insert(self._on_close, f)
 end
 
 function FloatWin:close()
 	for _, f in ipairs(self._on_close) do
-		f({ self._winnr, vim.api.nvim_win_get_buf(self._winnr) })
+		f({ winnr = self._winnr, bufnr = vim.api.nvim_win_get_buf(self._winnr) })
 	end
 
 	vim.api.nvim_win_close(self._winnr, true)

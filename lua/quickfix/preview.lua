@@ -8,6 +8,7 @@ qf.__index = qf
 
 local ns_id = vim.api.nvim_create_namespace("quickfix")
 local qfgroup = vim.api.nvim_create_augroup("qf", { clear = false })
+local Float = require "quickfix.float"
 
 ---@return integer
 local function get_cursor_lnum()
@@ -16,28 +17,26 @@ end
 
 ---@param item table | nil
 ---@return table|nil pos
-local function get_pos(item)
+local function get_extmark_pos(item)
 	if item == nil then
 		return nil
 	end
 
-	local lnum = item.lnum == 0 and 0 or item.lnum - 1
-	local col = item.col == 0 and 0 or item.col - 1
-	local end_row = item.end_lnum == 0 and 0 or item.end_lnum - 1
-	local end_col = item.end_col == 0 and 0 or item.end_col - 1
-
-	return {
-		lnum = lnum,
-		col = col,
-		end_row = end_row,
-		end_col = end_col,
+	local pos = {
+		lnum = math.max(0, item.lnum - 1),
+		col = math.max(0, item.col - 1),
 	}
+
+	pos.end_row = math.max(pos.lnum, item.end_lnum - 1)
+	pos.end_col = math.max(item.col, item.end_col - 1)
+
+	return pos
 end
 
 ---@return integer
 local function set_buf_hl(bufnr, pos)
 	return vim.api.nvim_buf_set_extmark(bufnr, ns_id, pos.lnum, pos.col, {
-		hl_group = "IncSearch",
+		hl_group = "TermCursor",
 		end_col = pos.end_col,
 		end_row = pos.end_row,
 	})
@@ -64,6 +63,13 @@ local function is_binary(fname)
 	return vim.fn.match(vim.fn.readfile(fname, '', 10), [[\%x00]]) ~= -1
 end
 
+local function detect_filetype(bufnr, bname)
+	return vim.filetype.match({
+		filename = bname,
+		buf = bufnr
+	})
+end
+
 ---@param float quickfix.FloatWin
 ---@param list table
 local function set_buf_with_under_cursor(float, list)
@@ -74,17 +80,19 @@ local function set_buf_with_under_cursor(float, list)
 	local item = list[get_cursor_lnum()]
 	local bname = vim.api.nvim_buf_get_name(item.bufnr)
 
-	if item.nr == -1 or is_binary(bname) then
-		return vim.notify("can't preview this item", vim.log.levels.ERROR)
+	if item.valid ~= 1 or is_binary(bname) then
+		return vim.notify("can't preview this item")
 	end
 
 	float:set_buf(item.bufnr)
 	local title = preview_title(item)
-	if title == nil then
-		return
+	if title then
+		float:set_title({ {title, "FloatBorder"} })
 	end
 
-	float:set_title({ {title, "FloatBorder"} })
+	if vim.bo[item.bufnr].filetype == "" then
+		vim.bo[item.bufnr].filetype = detect_filetype(item.bufnr, vim.fn.fnameescape(bname))
+	end
 	float:set_cursor(item.lnum, item.col)
 	float:feedkeys("zz")
 end
@@ -93,22 +101,22 @@ end
 ---@param nsid integer
 ---@return quickfix.FloatWin
 local function float_open(winnr, nsid)
-	local f = require "quickfix.float".open(winnr)
-	f:on_buf_before(function(bufnr)
-		vim.api.nvim_buf_clear_namespace(bufnr, ns_id, 0, -1)
+	local f = Float.open(winnr)
+	f:on_buf_before(function(args)
+		vim.api.nvim_buf_clear_namespace(args.bufnr, ns_id, 0, -1)
 	end)
 
-	f:on_buf_post(function(bufnr)
-		local pos = get_pos(qf._list[get_cursor_lnum()])
+	f:on_buf_post(function(args)
+		local pos = get_extmark_pos(qf._list[get_cursor_lnum()])
 		if pos == nil then
 			return
 		end
 
-		set_buf_hl(bufnr, pos)
+		set_buf_hl(args.bufnr, pos)
 	end)
 
 	f:on_close(function(args)
-		vim.api.nvim_buf_clear_namespace(args[2], nsid, 0, -1)
+		vim.api.nvim_buf_clear_namespace(args.bufnr, nsid, 0, -1)
 	end)
 
 	return f
@@ -138,7 +146,7 @@ local function create_qfwin_cursor_moved(bufnr)
 		group = qfgroup,
 		buffer = bufnr,
 		callback = function()
-			pcall(set_buf_with_under_cursor, qf._float_win, qf._list)
+			set_buf_with_under_cursor(qf._float_win, qf._list)
 		end
 	})
 end
