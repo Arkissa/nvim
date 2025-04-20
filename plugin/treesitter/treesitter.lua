@@ -22,6 +22,7 @@ require 'nvim-treesitter.configs'.setup {
 		"sql",
 		"nix",
 		"haskell",
+		"haskell_persistent",
 		"yaml",
 		"toml",
 		"proto",
@@ -37,6 +38,7 @@ require 'nvim-treesitter.configs'.setup {
 	highlight = {
 		enable = true,
 		-- disable = { 'markdown' },
+		disable = { 'haskell' },
 		-- additional_vim_regex_highlighting = true,
 	},
 	incremental_selection = {

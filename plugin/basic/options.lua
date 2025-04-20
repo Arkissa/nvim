@@ -40,15 +40,15 @@ opt.winborder = "rounded"
 opt.pumheight = 15
 vim.opt.wildignore:append {
 	'*.o',
-	'**/dist-newstyle/**',
 	'*.ibc',
 	'*.pyc',
-	'__pycache__',
-	'node_modules/',
 	'*.a',
 	'*.hi',
 	'*.spl',
 	'.DS_Store',
+	'**/__pycache__/**',
+	'**/dist-newstyle/**',
+	'**/node_modules/**',
 	'**/.git/**',
 	'**/pack/**',
 	'**/bin/**',

@@ -3,12 +3,6 @@ local methods = vim.lsp.protocol.Methods
 local pumvisible = vim.fn.pumvisible
 local feedkeys = vim.api.nvim_feedkeys
 
-local shorcut = {
-	path = vim.keycode "<C-F>",
-	omnifunc = vim.keycode "<C-X><C-O>",
-	keyword = vim.keycode "<C-N>"
-}
-
 local kind_icon = {
 	{ menu = 'Text', kind = '󰦨', kind_hlgroup = 'String' },
 	{ menu = 'Method', kind = '', kind_hlgroup = 'Function' },
@@ -37,31 +31,30 @@ local kind_icon = {
 	{ menu = 'TypeParameter', kind = '', kind_hlgroup = 'Type' },
 }
 
--- autocmd("InsertCharPre", {
--- 	group = auto_completion,
--- 	desc = 'autcomplete path',
--- 	callback = function()
--- 		if vim.opt.filetype:get() == "oil"
--- 			or pumvisible() == 1
--- 			or vim.fn.state 'm' == 'm'
--- 		then
--- 			return
--- 		end
---
--- 		local char = vim.v.char
---
--- 		if char:match("[^%w.]") then
--- 			return
--- 		end
---
--- 		if vim.opt.omnifunc:get() == "" then
--- 			feedkeys(shorcut.keyword, "im", false)
--- 			return
--- 		end
---
--- 		feedkeys(shorcut.omnifunc, "im", false)
--- 	end
--- })
+autocmd("InsertCharPre", {
+	group = auto_completion,
+	desc = 'autcomplete path',
+	callback = function()
+		if vim.opt.filetype:get() == "oil"
+			or pumvisible() == 1
+			or vim.fn.state 'm' == 'm'
+		then
+			return
+		end
+
+		local char = vim.v.char
+
+		if char:match("[^%w.]") then
+			return
+		end
+
+		if vim.opt.omnifunc:get() == "" then
+			return
+		end
+
+		feedkeys(vim.keycode "<C-X><C-O>", "im", false)
+	end
+})
 
 autocmd('LspAttach', {
 	desc = 'autocomplete lsp',
@@ -79,7 +72,6 @@ autocmd('LspAttach', {
 					abbr = item.label,
 					kind = m.kind,
 					kind_hlgroup = m.kind_hlgroup,
-					-- abbr_hlgroup = "Tag"
 				}
 			end
 		})

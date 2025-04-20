@@ -1,3 +1,4 @@
-vim.keymap.set('n', "<Leader>g", ":Grep ", {})
-vim.keymap.set('n', "<Leader>f", ":Find ", {})
-vim.keymap.set('n', "<Leader>w", ":Words ", {})
+vim.keymap.set('n', "<Leader>g", ":Vimgrep ", { noremap = true })
+vim.keymap.set('n', "<Leader>w", ":Vimwords ", { noremap = true })
+vim.keymap.set('n', "<Leader>f", ":Find ", { noremap = true })
+vim.keymap.set('n', "<Leader>G", ":Cgrep ", { noremap = true })
