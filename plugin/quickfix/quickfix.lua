@@ -13,6 +13,7 @@ end, { nargs = 1 })
 vim.api.nvim_create_user_command("Find", function(args)
 	finder:find(args.args)
 end, { nargs = 1})
+vim.o.quickfixtextfunc = "v:lua.require'quickfix.textfunc'.func"
 
 autocmd("QuickFixCmdPost", {
 	group = qf,
