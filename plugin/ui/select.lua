@@ -30,6 +30,20 @@ local function set_lines(bufnr, lines)
 	bo[bufnr].modifiable = false
 end
 
+---@param strs string[]
+---@return string[]
+local function get_lines(strs)
+	local lines = {}
+	for i, str in ipairs(strs) do
+		local line = vim.split(str, "\\n", {trimempty = true})
+		local padding = #tostring(#strs) + 2
+		line[1] = ("%%-%ds%%s"):format(padding):format(tostring(i)..'.', line[1])
+		lines = vim.fn.extend(lines, line)
+	end
+
+	return lines
+end
+
 ---@param items any[]
 ---@param opts {prompt: string|nil, format_item: fun(item: any): string}
 ---@param on_choice fun(item: any?, idx: integer?)
@@ -45,28 +59,15 @@ vim.ui.select = function(items, opts, on_choice)
 	end
 
 	local formatted = vim.tbl_map(opts.format_item, items)
-	local max_len_item = vim.fn.max(vim.iter(formatted)
+	local lines = get_lines(formatted)
+
+	local max_len_item = vim.fn.max(vim.iter(lines)
 		:map(function(item)
 			return #item
 		end)
 		:totable())
 
-	local win = win_open(#items, max_len_item, opts.prompt or "Select:")
-
-	set_lines(win.bufnr, vim.iter(ipairs(formatted))
-		:map(function(i, v)
-			local padding = #tostring(#formatted) + 2
-			return ("%%-%ds%%s"):format(padding):format(tostring(i)..'.', v)
-		end)
-		:totable())
-
-	autocmd({ "WinLeave", "BufLeave", "BufHidden" }, {
-		group = select,
-		buffer = win.bufnr,
-		callback = function(args)
-			choice(args.buf)
-		end
-	})
+	local win = win_open(#lines, max_len_item+1, opts.prompt or "Select:")
 
 	vim.keymap.set('n', "q", function()
 		choice(win.bufnr)
@@ -80,4 +81,14 @@ vim.ui.select = function(items, opts, on_choice)
 		local idx = api.nvim_win_get_cursor(win.winnr)[1]
 		choice(win.bufnr, items[idx], idx)
 	end, { noremap = true, buffer = win.bufnr })
+
+	autocmd({ "WinLeave", "BufLeave", "BufHidden" }, {
+		group = select,
+		buffer = win.bufnr,
+		callback = function(args)
+			choice(args.buf)
+		end
+	})
+
+	set_lines(win.bufnr, lines)
 end
