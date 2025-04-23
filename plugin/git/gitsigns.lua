@@ -51,7 +51,7 @@ require('gitsigns').setup {
 		map('n', '<leader>hp', gitsigns.preview_hunk)
 		map('n', '<leader>hd', gitsigns.diffthis)
 		map('n', '<leader>hD', function() gitsigns.diffthis('~') end)
-		map('n', '<leader>td', gitsigns.toggle_deleted)
+		map('n', '<leader>hd', gitsigns.toggle_deleted)
 
 		-- Text object
 		map({ 'o', 'x' }, 'ih', ':<C-U>Gitsigns select_hunk<CR>')
