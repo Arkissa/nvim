@@ -7,6 +7,8 @@ opt.filetype.plugin = true
 opt.filetype.indent = true
 opt.autoindent = true
 opt.smartindent = true
+opt.backup = true
+opt.backupdir:remove(".")
 opt.undofile = true
 opt.ruler = false
 opt.spelllang:append "cjk"
