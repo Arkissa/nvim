@@ -1,13 +1,10 @@
 return {
 	cmd = { 'haskell-language-server-wrapper', '--lsp' },
 	filetypes = { 'haskell', 'lhaskell' },
-	root_dir = function(bufnr, on_dir)
-		local fname = vim.api.nvim_buf_get_name(bufnr)
-		on_dir(vim.fs.root(fname, { 'hie.yaml', 'stack.yaml', 'cabal.project', '*.cabal', 'package.yaml' }))
-	end,
+	root_markers = { 'hie.yaml', 'stack.yaml', 'cabal.project', '*.cabal', 'package.yaml' },
 	settings = {
 		haskell = {
-			formattingProvider = '',
+			formattingProvider = 'fourmolu',
 			cabalFormattingProvider = 'cabalfmt',
 			checkParents = "CheckOnSave",
 			checkProject = true,

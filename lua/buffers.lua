@@ -76,6 +76,17 @@ function Buffer:is_loaded()
 	return vim.api.nvim_buf_is_loaded(self:bufnr())
 end
 
+---@param name string
+---@param value any
+function Buffer:set_var(name, value)
+	vim.b[self:bufnr()][name] = value
+end
+
+---@param name string
+function Buffer:get_var(name)
+	return vim.b[self:bufnr()][name]
+end
+
 return setmetatable({}, {
 	---@param b integer|string
 	---@return buffers.Buffer

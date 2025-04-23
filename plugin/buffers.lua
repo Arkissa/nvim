@@ -1,4 +1,3 @@
-local Buffer = require "buffers"
 vim.api.nvim_create_user_command("Buffers", function (args)
 	local buffers = vim.iter(vim.api.nvim_list_bufs())
 		:filter(vim.api.nvim_buf_is_valid)

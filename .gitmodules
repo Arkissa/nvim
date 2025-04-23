@@ -25,3 +25,6 @@
 [submodule "pack/explorer/start/oil.nvim"]
 	path = pack/explorer/start/oil.nvim
 	url = https://github.com/RicardoKovd/oil.nvim.git
+[submodule "pack/haskell/start/haskell-vim"]
+	path = pack/haskell/start/haskell-vim
+	url = https://github.com/RicardoKovd/haskell-vim

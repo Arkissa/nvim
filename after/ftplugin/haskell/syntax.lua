@@ -1,0 +1,10 @@
+vim.g.haskell_classic_highlighting = 1
+vim.g.haskell_enable_quantification = 1
+vim.g.haskell_enable_pattern_synonyms = 1
+vim.g.haskell_enable_arrowsyntax = 1
+vim.g.haskell_enable_typeroles = 1
+vim.g.haskell_enable_boolean = 1
+vim.g.haskell_enable_ordering = 1
+vim.g.haskell_enable_monad_return = 1
+vim.g.haskell_enable_applicative_pure = 1
+vim.g.haskell_enable_delimiter_is_type = 1

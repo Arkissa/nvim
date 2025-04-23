@@ -38,8 +38,7 @@ require 'nvim-treesitter.configs'.setup {
 	highlight = {
 		enable = true,
 		-- disable = { 'markdown' },
-		-- disable = { 'haskell' },
-		additional_vim_regex_highlighting = true,
+		disable = { 'haskell' },
 	},
 	incremental_selection = {
 		enable = true,
