@@ -22,8 +22,8 @@ end
 local joinpath = vim.fs.joinpath
 
 if vim.uv.fs_stat(joinpath(dir, "stack.yaml")) then
-	buffer:set_var("start", "stack repl %")
+	buffer:set_var("start", "stack repl --ghci-options '-v0' %")
 elseif vim.uv.fs_stat(vim.fn.glob(joinpath(dir, "*.cabal"))) then
-	buffer:set_var("start", "cabal repl %")
+	buffer:set_var("start", "cabal repl --repl-options='-v0' %")
 end
 
