@@ -28,7 +28,7 @@ local function get_extmark_pos(item)
 	}
 
 	pos.end_row = math.max(pos.lnum, item.end_lnum - 1)
-	pos.end_col = math.max(item.col, item.end_col - 1)
+	pos.end_col = math.max(1, item.end_col - 1)
 
 	return pos
 end
