@@ -58,8 +58,12 @@ function M.func(info)
 	return vim.iter(qflist)
 		:map(function(item)
 			local fname = get_bufname(item.bufnr)
-			return ("%-" .. tostring(length.name) .. "s |%" .. tostring(length.lnum_and_col+1) .. "s%-"..tostring(length.type+1).."s| %s")
-				:format(fname, ("%d:%d"):format(item.lnum, item.col), item.type, item.text)
+			local lclen = length.lnum_and_col
+			local tlen = length.type ~= 0 and length.type + 1 or 0
+			local lc = ("%d:%d"):format(item.lnum, item.col)
+
+			local line = "%-"..tostring(tlen).."s%-" .. tostring(length.name) .. "s │%" .. tostring(lclen) .. "s│ %s"
+			return line:format(item.type, fname, lc, item.text)
 		end)
 		:totable()
 end
