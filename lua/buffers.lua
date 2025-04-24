@@ -11,9 +11,10 @@ function Buffer:name()
 	return vim.api.nvim_buf_get_name(self._bufnr)
 end
 
----@return [integer, integer]
+---@return {row: integer, col: integer}
 function Buffer:last_pos()
-	return vim.api.nvim_buf_get_mark(self._bufnr, '"')
+	local pos = vim.api.nvim_buf_get_mark(self._bufnr, '"')
+	return {row=math.max(1, pos[1]), col=math.max(1, pos[2])}
 end
 
 ---@return integer
@@ -38,10 +39,11 @@ end
 function Buffer:to_qfitem()
 	local pos = self:last_pos()
 	local lines = {}
+
 	if self:is_binary() then
 		lines = { vim.fs.basename(self:name()) }
 	else
-		lines = vim.api.nvim_buf_get_lines(self:bufnr(), pos[1] - 1, pos[1], false)
+		lines = vim.api.nvim_buf_get_lines(self:bufnr(), pos.row - 1, pos.row, false)
 		if not lines or vim.tbl_isempty(lines) then
 			lines = { "" }
 		end
@@ -49,10 +51,10 @@ function Buffer:to_qfitem()
 
 	return {
 		bufnr = self:bufnr(),
-		col = pos[2],
-		end_col = pos[2],
-		end_lnum = pos[1],
-		lnum = pos[1],
+		col = pos.col,
+		end_col = pos.col + 1,
+		end_lnum = pos.row,
+		lnum = pos.row,
 		nr = 0,
 		text = lines[1],
 		valid = 1,
