@@ -5,9 +5,9 @@ endif
 syn keyword qfError E contained
 syn keyword qfWarn W contained
 syn keyword qfInfo I contained
-syn keyword qfHint H contained
+syn keyword qfNote N contained
 
-syn match qfFileName "^\(\(E\|W\|I\|H\)\s\)\{0,1}[^│]*" nextgroup=qfSeparator1 contains=qfError,qfWarn,qfInfo,qfHint
+syn match qfFileName "^\(\(E\|W\|I\|H\)\s\)\{0,1}[^│]*" nextgroup=qfSeparator1 contains=qfError,qfWarn,qfInfo,qfNote
 syn match qfSeparator1 "│" contained nextgroup=qfLineNr
 syn match qfLineNr "[^│]*" contained nextgroup=qfSeparator2
 syn match qfSeparator2 "│" contained nextgroup=qfText
@@ -31,6 +31,6 @@ hi def link qfText Normal
 hi def link qfError DiagnosticError
 hi def link qfWarn DiagnosticWarn
 hi def link qfInfo DiagnosticInfo
-hi def link qfHint DiagnosticHint
+hi def link qfNote DiagnosticHint
 
 let b:current_syntax = 'qf'
