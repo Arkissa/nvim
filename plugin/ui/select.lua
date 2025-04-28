@@ -38,7 +38,7 @@ local function get_lines(strs)
 		local line = vim.split(str, "\\n", {trimempty = true})
 		local padding = #tostring(#strs) + 2
 		line[1] = ("%%-%ds%%s"):format(padding):format(tostring(i)..'.', line[1])
-		lines = vim.fn.extend(lines, line)
+		lines = vim.list_extend(lines, line)
 	end
 
 	return lines
@@ -89,6 +89,12 @@ vim.ui.select = function(items, opts, on_choice)
 			choice(args.buf)
 		end
 	})
+
+	for i = 1, #lines,1 do
+		vim.keymap.set('n', tostring(i), function()
+			choice(win.bufnr, items[i], i)
+		end, { noremap = true, buffer = win.bufnr })
+	end
 
 	set_lines(win.bufnr, lines)
 end
