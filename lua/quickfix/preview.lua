@@ -1,18 +1,30 @@
----@class Quickfix
+---@class quickfix.Preview
 ---@field private _winnr integer
 ---@field private _bufnr integer
----@field private _list table
 ---@field private _float_win quickfix.FloatWin
-local qf = {}
-qf.__index = qf
+local pw = {}
+pw.__index = pw
 
-local ns_id = vim.api.nvim_create_namespace("quickfix")
+local ns_id = vim.api.nvim_create_namespace("quickfix.preview")
 local qfgroup = vim.api.nvim_create_augroup("qf", { clear = false })
 local Float = require "quickfix.float"
 
+---@param winnr integer
+---@return table|nil
+local function get_qflist(winnr)
+	local winfo = vim.fn.getwininfo(winnr)[1]
+	if winfo.quickfix == 0 then
+		return nil
+	end
+
+	return winfo.loclist == 1
+		and vim.fn.getloclist(winnr)
+		or vim.fn.getqflist()
+end
+
 ---@return integer
 local function get_cursor_lnum()
-	return vim.api.nvim_win_get_cursor(qf._winnr)[1]
+	return vim.api.nvim_win_get_cursor(pw._winnr)[1]
 end
 
 ---@param item table | nil
@@ -28,7 +40,8 @@ local function get_extmark_pos(item)
 	}
 
 	pos.end_row = math.max(pos.lnum, item.end_lnum - 1)
-	pos.end_col = math.max(1, item.end_col - 1)
+	pos.end_col = math.max(pos.col+1, item.end_col - 1)
+	-- vim.print(pos)
 
 	return pos
 end
@@ -107,7 +120,8 @@ local function float_open(winnr, nsid)
 	end)
 
 	f:on_buf_post(function(args)
-		local pos = get_extmark_pos(qf._list[get_cursor_lnum()])
+		local qflist = assert(get_qflist(pw._winnr))
+		local pos = get_extmark_pos(qflist[get_cursor_lnum()])
 		if pos == nil then
 			return
 		end
@@ -123,8 +137,8 @@ local function float_open(winnr, nsid)
 end
 
 local function float_close()
-	qf._float_win:close()
-	qf._float_win = nil
+	pw._float_win:close()
+	pw._float_win = nil
 end
 
 ---@return integer
@@ -133,7 +147,7 @@ local function create_qfwin_quit(bufnr)
 		group = qfgroup,
 		buffer = bufnr,
 		callback = function()
-			if qf._float_win then
+			if pw._float_win then
 				float_close()
 			end
 		end
@@ -146,23 +160,24 @@ local function create_qfwin_cursor_moved(bufnr)
 		group = qfgroup,
 		buffer = bufnr,
 		callback = function()
-			set_buf_with_under_cursor(qf._float_win, qf._list)
+			local qflist = assert(get_qflist(pw._winnr))
+			set_buf_with_under_cursor(pw._float_win, qflist)
 		end
 	})
 end
 
 local function hook_cr()
 	vim.on_key(function(key, _)
-		if vim.api.nvim_get_current_win() ~= qf._winnr then
+		if vim.api.nvim_get_current_win() ~= pw._winnr then
 			return
 		end
 
-		if vim.fn.keytrans(key) == "<CR>" and qf._float_win then
+		if vim.fn.keytrans(key) == "<CR>" and pw._float_win then
 			return float_close()
 		end
 	end, ns_id)
 
-	qf._float_win:on_close(function(_)
+	pw._float_win:on_close(function(_)
 		vim.on_key(nil, ns_id)
 	end)
 
@@ -197,38 +212,32 @@ end
 
 local function create_toggle_floatwin(bufnr)
 	vim.keymap.set('n', "K", function ()
-		if vim.tbl_isempty(qf._list) then
+		local qflist = assert(get_qflist(pw._winnr))
+		if vim.tbl_isempty(qflist) then
 			return vim.notify("list is empty.", vim.log.levels.ERROR)
 		end
 
-		if qf._float_win then
+		if pw._float_win then
 			return float_close()
 		end
 
-		qf._float_win = float_open(qf._winnr, ns_id)
+		pw._float_win = float_open(pw._winnr, ns_id)
 
 		hook_cr()
-		create_autocmd(qf._float_win, bufnr)
-		create_keymap(qf._float_win, bufnr, "<C-u>", "zz") -- scroll up a half page on floating preview window
-		create_keymap(qf._float_win, bufnr, "<C-d>", "zz") -- scrool down a half page on floating preview window
-		create_keymap(qf._float_win, bufnr, "gg", "gg") -- go to top line on floating preview window
-		create_keymap(qf._float_win, bufnr, "G", "G") -- go to top line on floating preview window
-		set_buf_with_under_cursor(qf._float_win, qf._list)
+		create_autocmd(pw._float_win, bufnr)
+		create_keymap(pw._float_win, bufnr, "<C-u>", "zz") -- scroll up a half page on floating preview window
+		create_keymap(pw._float_win, bufnr, "<C-d>", "zz") -- scrool down a half page on floating preview window
+		create_keymap(pw._float_win, bufnr, "gg", "gg") -- go to top line on floating preview window
+		create_keymap(pw._float_win, bufnr, "G", "G") -- go to top line on floating preview window
+		set_buf_with_under_cursor(pw._float_win, qflist)
 	end, { noremap = true, buffer = bufnr })
 end
 
-function qf.preview_on_float(winnr)
-	local winfo = vim.fn.getwininfo(winnr)[1]
-	if winfo.quickfix == 0 then
-		return
-	end
+function pw.preview_on_float(winnr)
 
-	qf._winnr = winnr
-	qf._bufnr = vim.api.nvim_win_get_buf(winnr)
-	qf._list = winfo.loclist == 1
-		and vim.fn.getloclist(vim.fn.bufnr('#'))
-		or vim.fn.getqflist()
-	create_toggle_floatwin(qf._bufnr)
+	pw._winnr = winnr
+	pw._bufnr = vim.api.nvim_win_get_buf(winnr)
+	create_toggle_floatwin(pw._bufnr)
 end
 
-return qf
+return pw
