@@ -5,7 +5,7 @@ autocmd("LspAttach", {
 	callback = function(args)
 		local client = assert(vim.lsp.get_client_by_id(args.data.client_id))
 
-		if not client:supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint) then
+		if not client:supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint, args.buf) then
 			return
 		end
 

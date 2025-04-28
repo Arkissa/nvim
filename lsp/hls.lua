@@ -1,89 +1,67 @@
+---@param client vim.lsp.Client
+---@return lsp.ServerCapabilities
+local function special_on_cabal(client)
+	return vim.tbl_extend('force', client.server_capabilities, {
+		inlayHintProvider = false,
+		documentHighlightProvider = false,
+	})
+end
+
+---@type vim.lsp.Config
 return {
-	cmd = { 'haskell-language-server-wrapper', '--lsp' },
-	filetypes = { 'haskell', 'lhaskell' },
-	root_markers = { 'hie.yaml', 'stack.yaml', 'cabal.project', '*.cabal', 'package.yaml' },
+	cmd = {"haskell-language-server-wrapper", "--lsp", "--logfile", vim.fs.joinpath(vim.fn.stdpath("log"), "haskell-language-server.log") },
+	filetypes = { "haskell", "lhaskell", "cabal", "cabalproject" },
+	root_markers = { "hie.yaml", "stack.yaml", "cabal.project", "*.cabal", "package.yaml" },
+	on_init = function(client, _)
+		local bufnr = vim.api.nvim_get_current_buf()
+		if vim.tbl_contains({ "cabal", "cabalproject" }, vim.bo[bufnr].filetype) then
+			client.server_capabilities = special_on_cabal(client)
+			return
+		end
+
+		if vim.tbl_contains({"haskell", "lhaskell"}, vim.bo[bufnr].filetype) then
+			-- I don't like inlay hint on haskell.
+			client.server_capabilities.inlayHintProvider = false
+		end
+	end,
+	on_attach = function(client, bufnr)
+		if client:supports_method(vim.lsp.protocol.Methods.textDocument_codeLens) then
+			-- Automatically refresh code lens.
+			vim.api.nvim_create_autocmd({ 'InsertLeave', 'BufWritePost', 'TextChanged' }, {
+				group = augroup("hls-lens", {}),
+				buffer = bufnr,
+				callback = vim.schedule_wrap(vim.lsp.codelens.refresh),
+			})
+			-- refresh codelens right now!
+			vim.lsp.codelens.refresh()
+		end
+	end,
 	settings = {
 		haskell = {
-			formattingProvider = 'fourmolu',
-			cabalFormattingProvider = 'cabalfmt',
+			formattingProvider = "fourmolu",
+			maxCompletions = 40,
 			checkParents = "CheckOnSave",
 			checkProject = true,
 			plugin = {
-				alternateNumberFormat = { globalOn = true },
-				callHierarchy = { globalOn = true },
-				changeTypeSignature = { globalOn = true },
-				class = {
-					codeActionsOn = true,
-					codeLensOn = true,
-				},
 				eval = {
-					globalOn = true,
-					config = {
-						diff = true,
-						exception = true,
-					},
-				},
-				explicitFixity = { globalOn = true },
-				gadt = { globalOn = true },
-				['ghcide-code-actions-bindings'] = { globalOn = true },
-				['ghcide-code-actions-fill-holes'] = { globalOn = true },
-				['ghcide-code-actions-imports-exports'] = { globalOn = true },
-				['ghcide-code-actions-type-signatures'] = { globalOn = true },
-				['ghcide-completions'] = {
-					globalOn = true,
-					config = {
-						autoExtendOn = true,
-						snippetsOn = true,
-					},
-				},
-				['ghcide-hover-and-symbols'] = {
-					hoverOn = true,
-					symbolsOn = true,
-				},
-				['ghcide-type-lenses'] = {
-					globalOn = true,
-					config = {
-						mode = 'always',
-					},
-				},
-				haddockComments = { globalOn = true },
-				hlint = {
-					codeActionsOn = true,
-					diagnosticsOn = true,
-				},
-				importLens = {
-					globalOn = true,
-					codeActionsOn = true,
-					codeLensOn = true,
-				},
-				moduleName = { globalOn = true },
-				pragmas = {
-					codeActionsOn = true,
-					completionOn = true,
-				},
-				qualifyImportedNames = { globalOn = true },
-				refineImports = {
-					codeActionsOn = true,
-					codeLensOn = true,
+					config = { exception = true }
 				},
 				rename = {
-					globalOn = true,
 					config = { crossModule = true },
 				},
-				retrie = { globalOn = true },
-				splice = { globalOn = true },
-				tactics = {
-					codeActionsOn = true,
-					codeLensOn = true,
-					config = {
-						auto_gas = 4,
-						hole_severity = nil,
-						max_use_ctor_actions = 5,
-						proofstate_styling = true,
-						timeout_duration = 2,
-					},
-					hoverOn = true,
+				["ghcide-type-lenses"] = {
+					mode = { exported = true }
 				},
+				hlint = {
+					config = {
+						flags = {
+							"--show"
+						}
+					}
+				},
+				fourmolu = {
+					config = { external = true }
+				}
 			},
 		},
 	},

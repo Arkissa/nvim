@@ -8,7 +8,7 @@ autocmd("LspAttach", {
 		local bufnr = args.buf
 		local client = assert(vim.lsp.get_client_by_id(args.data.client_id))
 
-		if not client:supports_method(methods.textDocument_documentHighlight) then
+		if not client:supports_method(methods.textDocument_documentHighlight, args.buf) then
 			return
 		end
 

@@ -5,14 +5,26 @@ opt.list = false
 opt.expandtab = true
 opt.tabstop = 4
 opt.shiftwidth = 4
-autocmd("LspAttach", {
-	group = augroup("haskell", {}),
-	buffer = buffer:bufnr(),
-	callback = function ()
-		vim.lsp.inlay_hint.enable(false)
+
+vim.api.nvim_buf_create_user_command(buffer:bufnr(), "Hlint", function(opts)
+	if not vim.fn.executable("hlint") then
+		return vim.notify("Hlint: not found hlint command", vim.log.levels.ERROR)
 	end
+
+	require "haskell.hlint".hlint(opts.fargs)
+end, {
+	nargs = "*"
 })
 
+vim.api.nvim_buf_create_user_command(buffer:bufnr(), "LHlint", function(opts)
+	if not vim.fn.executable("hlint") then
+		return vim.notify("Hlint: not found hlint command", vim.log.levels.ERROR)
+	end
+
+	require "haskell.hlint".hlint(opts.fargs, vim.api.nvim_get_current_win())
+end, {
+	nargs = "*"
+})
 
 local dir = Path.root(buffer:bufnr(), { 'stack.yaml', '*.cabal' })
 if dir == nil then
