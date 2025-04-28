@@ -3,6 +3,7 @@ vim.bo[bufnr].buflisted = false
 vim.opt_local.relativenumber = false
 local winnr = vim.api.nvim_get_current_win()
 vim.wo[winnr].list = false
+vim.wo[winnr].wrap = false
 
 vim.keymap.set('n', 'u', "<CMD>colder<CR>", { noremap = true, buffer = bufnr, silent = true, desc = "Quickfix list undo changed" })
 vim.keymap.set('n', '<C-r>', "<CMD>cnewer<CR>", { noremap = true, buffer = bufnr, silent = true, desc = "Quickfix list redo changed" })
