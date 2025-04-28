@@ -16,7 +16,22 @@ end
 ---@return string
 local function get_bufname(bufnr)
 	local bname = vim.api.nvim_buf_get_name(bufnr)
-	return vim.fs.relpath(vim.fn.getcwd(), bname) or bname:gsub('^' .. vim.env.HOME, '~', 1)
+	bname = vim.fs.relpath(vim.fn.getcwd(), bname) or bname:gsub('^' .. vim.env.HOME, '~', 1)
+	if bname == '.' then
+		return ""
+	else
+		return bname
+	end
+end
+
+---@param bufname string
+---@return string
+local function get_fname(bufname, max_len)
+	if #bufname <= max_len then
+		return bufname
+	end
+
+	return "…" .. bufname:sub(bufname:len() - max_len+2)
 end
 
 ---@return {name: integer, lnum_and_col: integer, type: integer}
@@ -48,6 +63,14 @@ local function get_max_lengths(items)
 	return lengths
 end
 
+local function lnum_and_col(lnum, col)
+	if lnum == 0 and col == 0 then
+		return ""
+	end
+
+	return ("%d:%d"):format(lnum, col)
+end
+
 function M.func(info)
 	local qflist = getqflist(info).items
    	if #qflist == 0 then
@@ -55,14 +78,16 @@ function M.func(info)
 	end
 
 	local length = get_max_lengths(qflist)
+	local max_fname_width = math.min(length.name, math.floor(math.min(95, vim.o.columns / 4)))
 	return vim.iter(qflist)
 		:map(function(item)
-			local fname = get_bufname(item.bufnr)
-			local lclen = length.lnum_and_col
+			local fname = get_fname(get_bufname(item.bufnr), max_fname_width)
 			local tlen = length.type ~= 0 and length.type + 1 or 0
-			local lc = ("%d:%d"):format(item.lnum, item.col)
 
-			local line = "%-"..tostring(tlen).."s%-" .. tostring(length.name) .. "s │%" .. tostring(lclen) .. "s│ %s"
+			local lclen = length.lnum_and_col
+			local lc = lnum_and_col(item.lnum, item.col)
+
+			local line = "%-"..tostring(tlen).."s%-" .. tostring(max_fname_width) .. "s │%" .. tostring(lclen) .. "s│%" .. tostring(math.min(99, #item.text+1)) .."s"
 			return line:format(item.type, fname, lc, item.text)
 		end)
 		:totable()
