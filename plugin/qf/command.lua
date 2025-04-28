@@ -1,4 +1,4 @@
-local Finder = require "quickfix.find"
+local Finder = require "find"
 vim.api.nvim_create_user_command(
 	"Vimgrep",
 	function(args)
@@ -13,7 +13,7 @@ vim.api.nvim_create_user_command(
 vim.api.nvim_create_user_command(
 	"Vimwords",
 	function(args)
-		vim.cmd[args.bang and "vimgrepadd" or "vimgrep"]({ args = { string.format([[/\v<%s>/gj]], args.args), "**/*" }, mods = { silent = true } })
+		pcall(vim.cmd[args.bang and "vimgrepadd" or "vimgrep"], { args = { string.format([[/\<%s\>/gj]], args.args), "**/*" }, mods = { silent = true } })
 	end, {
 		nargs = 1,
 		bang = true,

@@ -3,12 +3,10 @@ vim.o.quickfixtextfunc = "v:lua.require'quickfix.textfunc'.func"
 
 autocmd("QuickFixCmdPost", {
 	group = qf,
-	nested = true,
 	callback = function()
-		if vim.tbl_isempty(vim.fn.getqflist()) then
-			return
+		local ok = pcall(vim.cmd.lwindow)
+		if not ok then
+			vim.cmd.cwindow()
 		end
-
-		vim.cmd.copen()
 	end
 })
