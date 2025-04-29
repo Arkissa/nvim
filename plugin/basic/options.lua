@@ -57,4 +57,3 @@ vim.opt.wildignore:append {
 }
 
 g.mapleader = k'<SPACE>'
--- g.health = { style = 'float' }

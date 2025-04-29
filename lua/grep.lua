@@ -6,9 +6,9 @@ local Quickfix = require "quickfix"
 ---@param name string
 ---@return any|nil
 local function get_option(name)
-	local ok, result = pcall(vim.api.nvim_get_option_value, name, {scope = "global"})
+	local ok, result = pcall(vim.api.nvim_get_option_value, name, { scope = "global" })
 	if not ok then
-		ok, result = pcall(vim.api.nvim_get_option_value, name, {scope = "local"})
+		ok, result = pcall(vim.api.nvim_get_option_value, name, { scope = "local" })
 		if not ok then
 			return nil
 		end
@@ -23,7 +23,8 @@ end
 
 ---@param flags string[]
 ---@param winnr integer?
-function M.Grep(flags, winnr)
+---@param append boolean?
+function M.Grep(flags, winnr, append)
 	local grepprg = get_option("grepprg")
 	if grepprg == nil then
 		return vim.notify("Not found grepprg option", vim.log.levels.ERROR)
@@ -48,15 +49,19 @@ function M.Grep(flags, winnr)
 	end
 
 	local qf = Quickfix(winnr)
-	qf:setlist({}, 'r', {title = "Grep"})
+	if not append then
+		qf:setlist({}, 'r')
+	end
+
+	qf:setlist({}, 'r', { title = "Grep" })
 	vim.fn.jobstart(grepprg, {
 		stdout_buffered = false,
-		on_stdout = vim.schedule_wrap(function (_, lines, _)
+		on_stdout = vim.schedule_wrap(function(_, lines, _)
 			if lines == nil or vim.tbl_isempty(lines) then
 				return
 			end
 
-			qf:setlist({}, 'a', { efm = gfm, lines = lines})
+			qf:setlist({}, 'a', { efm = gfm, lines = lines })
 		end),
 		on_exit = vim.schedule_wrap(function()
 			qf:window()
@@ -65,11 +70,11 @@ function M.Grep(flags, winnr)
 end
 
 function M.create_command()
-	vim.api.nvim_create_user_command("Grep", function (args)
+	vim.api.nvim_create_user_command("Grep", function(args)
 		M.Grep(args.fargs)
 	end, { nargs = "*", bang = true })
 
-	vim.api.nvim_create_user_command("LGrep", function (args)
+	vim.api.nvim_create_user_command("LGrep", function(args)
 		M.Grep(args.fargs, vim.api.nvim_get_current_win())
 	end, { nargs = "*", bang = true })
 end
