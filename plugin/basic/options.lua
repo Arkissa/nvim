@@ -22,7 +22,6 @@ opt.fillchars = {
 opt.list = true
 opt.showbreak = "↪ "
 opt.listchars = {
-	-- tab = '› ',
 	tab = '│ ',
 	trail = '·',
 }

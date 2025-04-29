@@ -44,7 +44,7 @@ autocmd("InsertCharPre", {
 
 		local char = vim.v.char
 
-		if char:match("[^%w.]") then
+		if char:match("[^%w.:]") then
 			return
 		end
 
