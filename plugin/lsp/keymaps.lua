@@ -10,10 +10,6 @@ end
 
 local function attach_keymaps(client, bufnr)
 	local opts = { noremap = true, silent = true, buffer = bufnr }
-	if client:supports_method(methods.textDocument_hover) then
-		set("n", "K", lsp.hover, opts)
-	end
-
 	if client:supports_method(methods.textDocument_rename) then
 		set("n", "<LEADER>r", lsp.rename, opts)
 	end
@@ -32,10 +28,6 @@ local function attach_keymaps(client, bufnr)
 
 	if client:supports_method(methods.textDocument_implementation) then
 		set("n", "<LEADER>i", lsp.implementation, opts)
-	end
-
-	if client:supports_method(methods.textDocument_signatureHelp) then
-		set("i", "<C-s>", lsp.signature_help, opts)
 	end
 end
 
