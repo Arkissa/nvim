@@ -8,9 +8,18 @@ local function getqflist(info)
 	return vim.fn.getloclist(info.winid, {id = info.id, items = 1})
 end
 
----@return integer
-local function get_lnum_and_col_length(item)
-	return #("%d:%d"):format(item.lnum, item.col)
+---@return string
+local function get_lnum_and_col(item)
+	local s = {}
+	if item.lnum and item.lnum > 0 then
+		table.insert(s, "%d")
+	end
+
+	if item.col and item.col > 0 then
+		table.insert(s, "%d")
+	end
+
+	return (vim.iter(s):join(':')):format(item.lnum, item.col)
 end
 
 ---@return string
@@ -38,7 +47,7 @@ end
 local function get_max_lengths(items)
 	local lengths = {
 		name = #get_bufname(items[1].bufnr),
-		lnum_and_col = get_lnum_and_col_length(items[1]),
+		lnum_and_col = #get_lnum_and_col(items[1]),
 		type = #items[1].type
 	}
 
@@ -49,7 +58,7 @@ local function get_max_lengths(items)
 			lengths.name = name_length
 		end
 
-		local lnum_and_col_length = get_lnum_and_col_length(item)
+		local lnum_and_col_length = #get_lnum_and_col(item)
 		if lengths.lnum_and_col < lnum_and_col_length then
 			lengths.lnum_and_col = lnum_and_col_length
 		end
@@ -63,14 +72,6 @@ local function get_max_lengths(items)
 	return lengths
 end
 
-local function lnum_and_col(lnum, col)
-	if lnum == 0 and col == 0 then
-		return ""
-	end
-
-	return ("%d:%d"):format(lnum, col)
-end
-
 function M.func(info)
 	local qflist = getqflist(info).items
    	if #qflist == 0 then
@@ -79,15 +80,14 @@ function M.func(info)
 
 	local length = get_max_lengths(qflist)
 	local max_fname_width = math.min(length.name, math.floor(math.min(95, vim.o.columns / 4)))
+	local tlen = length.type ~= 0 and length.type + 1 or 0
+
 	return vim.iter(qflist)
 		:map(function(item)
 			local fname = get_fname(get_bufname(item.bufnr), max_fname_width)
-			local tlen = length.type ~= 0 and length.type + 1 or 0
 
-			local lclen = length.lnum_and_col
-			local lc = lnum_and_col(item.lnum, item.col)
-
-			local line = "%-"..tostring(tlen).."s%-" .. tostring(max_fname_width) .. "s │%" .. tostring(lclen) .. "s│%" .. tostring(math.min(99, #item.text+1)) .."s"
+			local lc = get_lnum_and_col(item)
+			local line = "%-"..tostring(tlen).."s%-" .. tostring(max_fname_width) .. "s │%" .. tostring(length.lnum_and_col) .. "s│%" .. tostring(math.min(99, #item.text+1)) .."s"
 			return line:format(item.type, fname, lc, item.text)
 		end)
 		:totable()

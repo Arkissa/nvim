@@ -16,17 +16,27 @@ end
 ---@param what vim.fn.setqflist.what?
 ---@return integer
 function Quickfix:setlist(list, action, what)
-	return vim.fn.setqflist(list, action, what)
+	if what then
+		return vim.fn.setqflist(list, action, what)
+	end
+
+	return vim.fn.setqflist(list, action)
+end
+
+---
+---@param nr integer?
+function Quickfix:jump_first(nr)
+	return vim.cmd.cc({ nargs = { nr } })
 end
 
 ---@param height integer?
 function Quickfix:open(height)
-	return vim.cmd.copen({ nargs = {height} })
+	return vim.cmd.copen({ nargs = { height } })
 end
 
 ---@param height integer?
 function Quickfix:window(height)
-	return vim.cmd.cwindow({ nargs = {height} })
+	return vim.cmd.cwindow({ nargs = { height } })
 end
 
 ---@return boolean
@@ -50,17 +60,26 @@ end
 ---@param what vim.fn.setqflist.what?
 ---@return integer
 function Location:setlist(list, action, what)
-	return vim.fn.setloclist(self.winnr, list, action, what)
+	if what then
+		return vim.fn.setloclist(self.winnr, list, action, what)
+	end
+
+	return vim.fn.setloclist(self.winnr, list, action)
 end
 
 ---@param height integer?
 function Location:open(height)
-	return vim.cmd.copen({ nargs = {height} })
+	return vim.cmd.copen({ nargs = { height } })
 end
 
 ---@param height integer?
 function Location:window(height)
-	return vim.cmd.cwindow({ nargs = {height} })
+	return vim.cmd.cwindow({ nargs = { height } })
+end
+
+---@param nr integer?
+function Location:jump_first(nr)
+	return vim.cmd.ll({ nargs = { nr } })
 end
 
 ---@return boolean
@@ -71,7 +90,7 @@ end
 return setmetatable({}, {
 	---@param winnr integer?
 	---@return quickfix.Quickfix|quickfix.Location
-	__call = function (_, winnr)
+	__call = function(_, winnr)
 		if winnr then
 			return setmetatable({ winnr = winnr }, Location)
 		end
