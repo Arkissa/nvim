@@ -33,7 +33,9 @@ local type_filter = vim.iter(vim.g.cgrep_type_filter or {})
 	end)
 	:totable()
 
-vim.opt.grepprg = vim.iter({ cgrep, prune_dir, kind_filter, type_filter }):flatten():join(' ') .. " $* ."
+vim.opt.grepprg = vim.iter({ cgrep, prune_dir, kind_filter, type_filter })
+	:flatten()
+	:join(' ') .. " $* ."
 vim.opt.grepformat = "%-G,%f:%l:%c:%m"
 
 if vim.fn.exists(":Grep") == 0 then
