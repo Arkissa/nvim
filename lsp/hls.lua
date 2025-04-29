@@ -1,12 +1,3 @@
----@param client vim.lsp.Client
----@return lsp.ServerCapabilities
-local function special_on_cabal(client)
-	return vim.tbl_extend('force', client.server_capabilities, {
-		inlayHintProvider = false,
-		documentHighlightProvider = false,
-	})
-end
-
 ---@type vim.lsp.Config
 return {
 	cmd = {"haskell-language-server-wrapper", "--lsp", "--logfile", vim.fs.joinpath(vim.fn.stdpath("log"), "haskell-language-server.log") },
@@ -15,14 +6,11 @@ return {
 	on_init = function(client, _)
 		local bufnr = vim.api.nvim_get_current_buf()
 		if vim.tbl_contains({ "cabal", "cabalproject" }, vim.bo[bufnr].filetype) then
-			client.server_capabilities = special_on_cabal(client)
-			return
+			client.server_capabilities.documentHighlightProvider = false
 		end
 
-		if vim.tbl_contains({"haskell", "lhaskell"}, vim.bo[bufnr].filetype) then
-			-- I don't like inlay hint on haskell.
-			client.server_capabilities.inlayHintProvider = false
-		end
+		-- I don't like inlay hint on haskell.
+		client.server_capabilities.inlayHintProvider = false
 	end,
 	on_attach = function(client, bufnr)
 		if client:supports_method(vim.lsp.protocol.Methods.textDocument_codeLens) then
@@ -35,6 +23,10 @@ return {
 			-- refresh codelens right now!
 			vim.lsp.codelens.refresh()
 		end
+	end,
+	reuse_client = function()
+		local bufnr = vim.api.nvim_get_current_buf()
+		return not vim.tbl_contains({ "cabal", "cabalproject" }, vim.bo[bufnr].filetype)
 	end,
 	settings = {
 		haskell = {

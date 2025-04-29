@@ -20,4 +20,21 @@ function M.set_start(buffer, root_markers)
 	end
 end
 
+---@param bufnr integer
+function M.edit_project_cabal(bufnr)
+	local dir = Path.root(bufnr, M.root_markers)
+	if dir == nil then
+		vim.notify("Haskell: Not found workspace dir.", vim.log.levels.ERROR)
+		return
+	end
+
+	local cabals = vim.split(vim.fn.glob(vim.fs.joinpath(dir, "*.cabal")), '\n', {trimempty = true})
+	if vim.tbl_isempty(cabals) then
+		vim.notify("Haskell: Not found *.cabal file.", vim.log.levels.ERROR)
+		return
+	end
+
+	vim.cmd('e ' .. cabals[1])
+end
+
 return setmetatable({}, M)
