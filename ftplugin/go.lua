@@ -18,38 +18,3 @@ autocmd("BufWritePre", {
 		vim.lsp.buf.format()
 	end
 })
-
--- This for set breakpoint on dlv, very very useful.
-if vim.fn.exists('+clipboard') then
-	autocmd("LspAttach", {
-		desc = "Copy the file path of cursor under the line in .go file",
-		group = goroup,
-		callback = function(args)
-			local gopath = vim.fs.joinpath(vim.fn.trim(vim.fn.system("go env GOPATH")), "pkg", "mod")
-			local goroot = vim.fs.joinpath(vim.fn.trim(vim.fn.system("go env GOROOT")), "src")
-			local client = vim.lsp.get_client_by_id(args.data.client_id)
-			assert(client ~= nil)
-
-			vim.keymap.set("o", "il", function()
-				if vim.v.operator ~= 'y' then
-					return
-				end
-
-				local raw = vim.fn.expand("%:p")
-				local file = vim.fs.relpath(client.root_dir, raw)
-					or vim.fs.relpath(goroot, raw)
-					or vim.fs.relpath(gopath, raw)
-				vim.fn.setreg("+", string.format("%s:%d", file, vim.fn.line(".")))
-			end, { buffer = args.buf })
-
-			vim.keymap.set("o", "al", function()
-				if vim.v.operator ~= 'y' then
-					return
-				end
-
-				local file = vim.fn.expand("%:p")
-				vim.fn.setreg("+", string.format("%s:%d", file, vim.fn.line(".")))
-			end, { buffer = args.buf })
-		end
-	})
-end
