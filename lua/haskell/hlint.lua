@@ -14,6 +14,7 @@ local format = {
 }
 
 local Haskell = require "haskell"
+local Quickfix = require "quickfix"
 
 local efm = vim.iter(format):join(',')
 local hlint = {"hlint", "-s"}
@@ -24,31 +25,17 @@ end
 
 ---@param flags string[]
 ---@param winnr integer?
-function M.hlint(flags, winnr)
+---@param append boolean?
+function M.hlint(flags, winnr, append)
 	local cmd = vim.list_extend({}, hlint)
 
-	---@type fun(lines: string[])
-	local setqflist = nil
+	table.insert(cmd, winnr and vim.fn.expand("%:p") or workspace())
 
-	---@type function
-	local open_list = nil
+	local qf = Quickfix(winnr)
 
-	if winnr then
-		table.insert(cmd, vim.fn.expand("%:p"))
-		setqflist = function (lines)
-			vim.fn.setloclist(winnr, {}, 'a', {efm = efm, lines = lines})
-		end
-		open_list = function ()
-			vim.cmd.lwindow()
-		end
-	else
-		table.insert(cmd, workspace())
-		setqflist = function (lines)
-			vim.fn.setqflist({}, 'a', {efm = efm, lines = lines})
-		end
-		open_list = function ()
-			vim.cmd.cwindow()
-		end
+	qf:setlist({}, 'r', { title = "Hlint" })
+	if not append then
+		qf:setlist({}, 'r')
 	end
 
 	cmd = vim.list_extend(cmd, flags)
@@ -60,11 +47,11 @@ function M.hlint(flags, winnr)
 				return
 			end
 
-			setqflist(lines)
+			qf:setlist({}, 'a', {efm = efm, lines = lines})
 		end),
-		on_exit = vim.schedule_wrap(function ()
+		on_exit = vim.schedule_wrap(function()
 			vim.notify("Hlint done...", vim.log.levels.INFO)
-			open_list()
+			qf:window()
 		end)
 	})
 end
