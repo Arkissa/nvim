@@ -1,8 +1,8 @@
-local myvimrc = augroup("MYVIMRC", {
+local myvimrc = Augroup("MYVIMRC", {
 	clear = false,
 })
 
-autocmd("BufReadPost", {
+Autocmd("BufReadPost", {
 	group = myvimrc,
 	-- must be wait for filetype seted to run
 	callback = vim.schedule_wrap(function ()
@@ -17,29 +17,29 @@ autocmd("BufReadPost", {
 	end)
 })
 
-autocmd("TextYankPost", {
+Autocmd("TextYankPost", {
 	group = myvimrc,
 	callback = function()
 		vim.hl.on_yank()
 	end,
 })
 
-autocmd({ "WinEnter", "BufEnter" }, {
+Autocmd({ "WinEnter", "BufEnter" }, {
 	group = myvimrc,
 	command = "setlocal cursorline"
 })
 
-autocmd({ "WinLeave", "BufLeave"}, {
+Autocmd({ "WinLeave", "BufLeave"}, {
 	group = myvimrc,
 	command = "setlocal nocursorline"
 })
 
-autocmd("TermEnter", {
+Autocmd("TermEnter", {
 	group = myvimrc,
 	command = "setlocal nocursorline"
 })
 
-autocmd("BufEnter", {
+Autocmd("BufEnter", {
 	group = myvimrc,
 	nested = true,
 	callback = function(args)

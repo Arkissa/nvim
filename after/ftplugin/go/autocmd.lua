@@ -1,6 +1,6 @@
-autocmd("BufWritePre", {
+Autocmd("BufWritePre", {
 	desc = "format .go file on save",
-	group = augroup("go", {clear = false}),
+	group = Augroup("go", {clear = false}),
 	callback = function()
 		local params = vim.lsp.util.make_range_params(0, "utf-8")
 		---@diagnostic disable-next-line: inject-field

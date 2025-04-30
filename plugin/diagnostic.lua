@@ -20,7 +20,7 @@ vim.diagnostic.config {
 		},
 	},
 }
-local diag = augroup("diag", { clear = true })
+local diag = Augroup("diag", { clear = true })
 
 vim.keymap.set('n', '[e', function() vim.diagnostic.jump { count = -1, float = true } end)
 vim.keymap.set('n', ']e', function() vim.diagnostic.jump { count = 1, float = true } end)

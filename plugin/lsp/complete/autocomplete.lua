@@ -1,4 +1,4 @@
-local auto_completion = augroup("auto_completion", {})
+local auto_completion = Augroup("auto_completion", {})
 local methods = vim.lsp.protocol.Methods
 local pumvisible = vim.fn.pumvisible
 local feedkeys = vim.api.nvim_feedkeys
@@ -31,7 +31,7 @@ local kind_icon = {
 	{ menu = 'TypeParameter', kind = '', kind_hlgroup = 'Type' },
 }
 
-autocmd("InsertCharPre", {
+Autocmd("InsertCharPre", {
 	group = auto_completion,
 	desc = 'autcomplete path',
 	callback = function()
@@ -56,7 +56,7 @@ autocmd("InsertCharPre", {
 	end
 })
 
-autocmd('LspAttach', {
+Autocmd('LspAttach', {
 	desc = 'autocomplete lsp',
 	group = auto_completion,
 	callback = function(args)

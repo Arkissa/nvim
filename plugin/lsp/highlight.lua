@@ -1,8 +1,8 @@
-local document_highlight = augroup("document_highlight", { clear = false })
+local document_highlight = Augroup("document_highlight", { clear = false })
 local methods = vim.lsp.protocol.Methods
 vim.opt.updatetime = 300
 
-autocmd("LspAttach", {
+Autocmd("LspAttach", {
 	group = document_highlight,
 	callback = function(args)
 		local bufnr = args.buf
@@ -12,13 +12,13 @@ autocmd("LspAttach", {
 			return
 		end
 
-		local id = augroup("doc_highlight", { clear = false })
-		autocmd({ 'CursorHold', 'CursorHoldI' }, {
+		local id = Augroup("doc_highlight", { clear = false })
+		Autocmd({ 'CursorHold', 'CursorHoldI' }, {
 			group = id,
 			buffer = bufnr,
 			callback = vim.lsp.buf.document_highlight
 		})
-		autocmd({ 'CursorMoved', 'CursorMovedI' }, {
+		Autocmd({ 'CursorMoved', 'CursorMovedI' }, {
 			group = id,
 			buffer = bufnr,
 			callback = vim.lsp.buf.clear_references

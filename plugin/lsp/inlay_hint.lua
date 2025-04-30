@@ -1,5 +1,5 @@
-local inlay_hint = augroup("inlay_hint", {})
-autocmd("LspAttach", {
+local inlay_hint = Augroup("inlay_hint", {})
+Autocmd("LspAttach", {
 	desc = "startup inlay hints",
 	group = inlay_hint,
 	callback = function(args)

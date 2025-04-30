@@ -1,7 +1,7 @@
 local api = vim.api
 local wo = vim.wo
 local bo = vim.bo
-local input = augroup("input", {})
+local input = Augroup("input", {})
 
 local function keep_mode()
 	if vim.api.nvim_get_mode().mode == 'i' then
@@ -30,7 +30,7 @@ vim.ui.input = function (opts, on_confirm)
 		title = { { (" %s "):format(vim.trim(opts.prompt) or "Input:"), "FloatBorder"} },
 	})
 
-	autocmd({ "WinLeave", "BufLeave", "BufHidden" }, {
+	Autocmd({ "WinLeave", "BufLeave", "BufHidden" }, {
 		group = input,
 		buffer = bufnr,
 		callback = function(args)

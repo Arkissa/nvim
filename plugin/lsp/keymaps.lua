@@ -31,8 +31,8 @@ local function attach_keymaps(client, bufnr)
 	end
 end
 
-autocmd("LspAttach", {
-	group = augroup("lsp_keymaps", {}),
+Autocmd("LspAttach", {
+	group = Augroup("lsp_keymaps", {}),
 	callback = function(args)
 		local bufnr = args.buf
 		local client = assert(vim.lsp.get_client_by_id(args.data.client_id))

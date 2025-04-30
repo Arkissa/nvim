@@ -5,7 +5,7 @@ end
 ---@type string
 local last_mode = ""
 
-autocmd("ModeChanged", {
+Autocmd("ModeChanged", {
 	pattern = "i:n",
 	callback = function ()
 		local object = vim.system({ "ibus", "engine" }):wait()
@@ -22,7 +22,7 @@ autocmd("ModeChanged", {
 	end
 })
 
-autocmd("ModeChanged", {
+Autocmd("ModeChanged", {
 	pattern = "n:i",
 	callback = function ()
 		if last_mode ~= "" then

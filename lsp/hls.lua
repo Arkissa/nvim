@@ -16,7 +16,7 @@ return {
 		if client:supports_method(vim.lsp.protocol.Methods.textDocument_codeLens) then
 			-- Automatically refresh code lens.
 			vim.api.nvim_create_autocmd({ 'InsertLeave', 'BufWritePost', 'TextChanged' }, {
-				group = augroup("hls-lens", {}),
+				group = Augroup("hls-lens", {}),
 				buffer = bufnr,
 				callback = vim.schedule_wrap(vim.lsp.codelens.refresh),
 			})

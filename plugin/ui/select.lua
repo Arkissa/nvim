@@ -1,4 +1,4 @@
-local select = augroup("select", {})
+local select = Augroup("select", {})
 local api = vim.api
 local bo = vim.bo
 
@@ -82,7 +82,7 @@ vim.ui.select = function(items, opts, on_choice)
 		choice(win.bufnr, items[idx], idx)
 	end, { noremap = true, buffer = win.bufnr })
 
-	autocmd({ "WinLeave", "BufLeave", "BufHidden" }, {
+	Autocmd({ "WinLeave", "BufLeave", "BufHidden" }, {
 		group = select,
 		buffer = win.bufnr,
 		callback = function(args)
