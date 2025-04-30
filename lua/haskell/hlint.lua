@@ -26,7 +26,8 @@ end
 ---@param flags string[]
 ---@param winnr integer?
 ---@param append boolean?
-function M.hlint(flags, winnr, append)
+---@param bang boolean?
+function M.hlint(flags, winnr, append, bang)
 	local cmd = vim.list_extend({}, hlint)
 
 	table.insert(cmd, winnr and vim.fn.expand("%:p") or workspace())
@@ -52,6 +53,9 @@ function M.hlint(flags, winnr, append)
 		on_exit = vim.schedule_wrap(function()
 			vim.notify("Hlint done...", vim.log.levels.INFO)
 			qf:window()
+			if bang then
+				qf:jump_first()
+			end
 		end)
 	})
 end

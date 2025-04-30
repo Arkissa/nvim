@@ -5,7 +5,7 @@ vim.api.nvim_buf_create_user_command(bufnr, "Hlint", function(opts)
 		return vim.notify("Hlint: not found hlint command", vim.log.levels.ERROR)
 	end
 
-	require "haskell.hlint".hlint(opts.fargs)
+	require "haskell.hlint".hlint(opts.fargs, nil, false, opts.bang)
 end, {
 	nargs = "*"
 })
@@ -15,7 +15,7 @@ vim.api.nvim_buf_create_user_command(bufnr, "LHlint", function(opts)
 		return vim.notify("Hlint: not found hlint command", vim.log.levels.ERROR)
 	end
 
-	require "haskell.hlint".hlint(opts.fargs, vim.api.nvim_get_current_win())
+	require "haskell.hlint".hlint(opts.fargs, vim.api.nvim_get_current_win(), false, opts.bang)
 end, {
 	nargs = "*"
 })
@@ -25,7 +25,7 @@ vim.api.nvim_buf_create_user_command(bufnr, "Hlintadd", function(opts)
 		return vim.notify("Hlint: not found hlint command", vim.log.levels.ERROR)
 	end
 
-	require "haskell.hlint".hlint(opts.fargs, nil, true)
+	require "haskell.hlint".hlint(opts.fargs, nil, true, opts.bang)
 end, {
 	nargs = "*"
 })
@@ -35,7 +35,7 @@ vim.api.nvim_buf_create_user_command(bufnr, "LHlintadd", function(opts)
 		return vim.notify("Hlint: not found hlint command", vim.log.levels.ERROR)
 	end
 
-	require "haskell.hlint".hlint(opts.fargs, vim.api.nvim_get_current_win(), true)
+	require "haskell.hlint".hlint(opts.fargs, vim.api.nvim_get_current_win(), true, opts.bang)
 end, {
 	nargs = "*"
 })

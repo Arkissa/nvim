@@ -26,7 +26,7 @@ end
 ---
 ---@param nr integer?
 function Quickfix:jump_first(nr)
-	return vim.cmd.cc({ nargs = { nr } })
+	return vim.cmd.cc({ nargs = { nr }, mods = { silent = true } })
 end
 
 ---@param height integer?
@@ -79,7 +79,7 @@ end
 
 ---@param nr integer?
 function Location:jump_first(nr)
-	return vim.cmd.ll({ nargs = { nr } })
+	return vim.cmd.ll({ nargs = { nr }, mods = { silent = true } })
 end
 
 ---@return boolean

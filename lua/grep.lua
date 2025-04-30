@@ -24,7 +24,8 @@ end
 ---@param flags string[]
 ---@param winnr integer?
 ---@param append boolean?
-function M.Grep(flags, winnr, append)
+---@param bang boolean?
+function M.Grep(flags, winnr, append, bang)
 	local grepprg = get_option("grepprg")
 	if grepprg == nil then
 		return vim.notify("Not found grepprg option", vim.log.levels.ERROR)
@@ -65,17 +66,28 @@ function M.Grep(flags, winnr, append)
 		end),
 		on_exit = vim.schedule_wrap(function()
 			qf:window()
+			if bang then
+				qf:jump_first()
+			end
 		end)
 	})
 end
 
 function M.create_command()
 	vim.api.nvim_create_user_command("Grep", function(args)
-		M.Grep(args.fargs)
+		M.Grep(args.fargs, nil, false, args.bang)
 	end, { nargs = "*", bang = true })
 
 	vim.api.nvim_create_user_command("LGrep", function(args)
-		M.Grep(args.fargs, vim.api.nvim_get_current_win())
+		M.Grep(args.fargs, vim.api.nvim_get_current_win(), false, args.bang)
+	end, { nargs = "*", bang = true })
+
+	vim.api.nvim_create_user_command("Grepadd", function(args)
+		M.Grep(args.fargs, nil, true, args.bang)
+	end, { nargs = "*", bang = true })
+
+	vim.api.nvim_create_user_command("LGrepadd", function(args)
+		M.Grep(args.fargs, vim.api.nvim_get_current_win(), true, args.bang)
 	end, { nargs = "*", bang = true })
 end
 
