@@ -3,4 +3,5 @@ require "catppuccin".setup {
 	transparent_background = true,
 }
 
+Colors = require "catppuccin.palettes".get_palette("mocha")
 vim.cmd.colorscheme "catppuccin"

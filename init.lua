@@ -9,5 +9,5 @@ Augroup = vim.api.nvim_create_augroup
 Autocmd = vim.api.nvim_create_autocmd
 Buffer = require "buffers"
 Path = require "path"
-
+Colors = require "colors"
 vim.cmd.packadd "cfilter"
