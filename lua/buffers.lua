@@ -52,9 +52,9 @@ function Buffer:to_qfitem()
 	return {
 		bufnr = self:bufnr(),
 		col = pos.col,
-		end_col = pos.col + 1,
-		end_lnum = pos.row,
 		lnum = pos.row,
+		end_col = 0,
+		end_lnum = 0,
 		nr = 0,
 		text = lines[1],
 		valid = 1,
