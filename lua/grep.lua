@@ -31,18 +31,9 @@ function M.Grep(flags, winnr, append, bang)
 		return vim.notify("Not found grepprg option", vim.log.levels.ERROR)
 	end
 
-	local alternate_file_name = grepprg:match("#[^ ]*")
-
-	if alternate_file_name ~= nil then
-		grepprg = grepprg:gsub(alternate_file_name, vim.fn.expand(alternate_file_name))
-	end
-
-	local current_file_name = grepprg:match("%%:.*")
-	if current_file_name ~= nil then
-		grepprg = grepprg:gsub(current_file_name, vim.fn.expand(current_file_name))
-	end
-
 	grepprg = grepprg:gsub([[%$%*]], vim.iter(flags):join(" "))
+
+	grepprg = vim.fn.expandcmd(grepprg)
 
 	local gfm = get_option("grepformat")
 	if gfm == nil then
