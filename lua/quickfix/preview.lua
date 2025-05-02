@@ -28,7 +28,7 @@ local function get_cursor_lnum()
 end
 
 ---@param item table | nil
----@return table|nil pos
+---@return {lnum: integer, col: integer, end_row: integer, end_col: integer}|nil
 local function get_extmark_pos(item)
 	if item == nil then
 		return nil
@@ -41,7 +41,6 @@ local function get_extmark_pos(item)
 
 	pos.end_row = math.max(pos.lnum, item.end_lnum - 1)
 	pos.end_col = math.max(pos.col+1, item.end_col - 1)
-	-- vim.print(pos)
 
 	return pos
 end
@@ -123,6 +122,17 @@ local function float_open(winnr, nsid)
 		local qflist = assert(get_qflist(pw._winnr))
 		local pos = get_extmark_pos(qflist[get_cursor_lnum()])
 		if pos == nil then
+			return
+		end
+
+		local lines = vim.api.nvim_buf_get_lines(args.bufnr, pos.lnum, pos.end_row, true)
+		if vim.tbl_isempty(lines) then
+			return
+		end
+
+		if vim.iter(lines):all(function(line)
+			return line == ""
+		end) then
 			return
 		end
 
