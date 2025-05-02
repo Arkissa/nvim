@@ -3,6 +3,7 @@ local Finder = {}
 Finder.__index = Finder
 
 local Buffer = require "buffers"
+local AsyncCMD = require "async.cmd"
 
 local default_exculd_dirs = {
 	".git/",
@@ -38,29 +39,6 @@ local function exculd_files(files)
 		:totable()
 end
 
-local function on_stdout(_, data, _)
-	if data == nil then
-		return
-	end
-
-	local items = vim.iter(data)
-		:filter(function (file)
-			return #file ~= 0
-		end)
-		:map(function (file)
-			local buffer = Buffer(file)
-			local item = buffer:to_qfitem()
-			if item.text == "" then
-				item.text = vim.fs.basename(buffer:name())
-			end
-
-			return item
-		end)
-		:totable()
-
-	vim.fn.setqflist(items, 'a')
-end
-
 ---@private
 function Finder.build_cmd(pattern)
 	local cmd = vim.list_extend({}, find)
@@ -80,12 +58,28 @@ function Finder.find(pattern)
 	vim.fn.setqflist({}, 'r')
 	vim.fn.setqflist({}, 'r', { title = title })
 
-	vim.fn.jobstart(Finder.build_cmd(pattern), {
-		stdout_buffered = false,
-		on_stdout = vim.schedule_wrap(on_stdout),
-		on_exit = vim.schedule_wrap(function()
-			vim.cmd.cwindow()
-		end)
+	AsyncCMD.quickfix(Finder.build_cmd(pattern), {
+		on_stdout = function(invoke, lines)
+			local items = vim.iter(lines)
+				:filter(function (file)
+					return #file ~= 0
+				end)
+				:map(function (file)
+					local buffer = Buffer(file)
+					local item = buffer:to_qfitem()
+					if item.text == "" then
+						item.text = vim.fs.basename(buffer:name())
+					end
+
+					return item
+				end)
+				:totable()
+
+			invoke(items, 'a')
+		end,
+		on_exit = function(qf)
+			qf:window()
+		end
 	})
 end
 

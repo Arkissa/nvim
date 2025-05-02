@@ -1,7 +1,7 @@
 local M = {}
 M.__index = M
 
-local Quickfix = require "quickfix"
+local AsyncCMD = require "async.cmd"
 
 ---@param name string
 ---@return any|nil
@@ -26,41 +26,36 @@ end
 ---@param append boolean?
 ---@param bang boolean?
 function M.Grep(flags, winnr, append, bang)
+	---@type string
 	local grepprg = get_option("grepprg")
 	if grepprg == nil then
 		return vim.notify("Not found grepprg option", vim.log.levels.ERROR)
 	end
 
-	grepprg = grepprg:gsub([[%$%*]], vim.iter(flags):join(" "))
-
-	grepprg = vim.fn.expandcmd(grepprg)
+	local prg, count = grepprg:gsub([[%$%*]], vim.iter(flags):join(" "))
+	if count == 0 then
+		prg = vim.trim(prg) .. ' ' .. vim.iter(flags):join(' ')
+	end
+	---@type string
+	prg = vim.fn.expandcmd(prg)
 
 	local gfm = get_option("grepformat")
 	if gfm == nil then
 		return vim.notify("Not found grepformat option", vim.log.levels.ERROR)
 	end
 
-	local qf = Quickfix(winnr)
-	if not append then
-		qf:setlist({}, 'r')
-	end
-
-	qf:setlist({}, 'r', { title = "Grep" })
-	vim.fn.jobstart(grepprg, {
-		stdout_buffered = false,
-		on_stdout = vim.schedule_wrap(function(_, lines, _)
-			if lines == nil or vim.tbl_isempty(lines) then
-				return
-			end
-
-			qf:setlist({}, 'a', { efm = gfm, lines = lines })
-		end),
-		on_exit = vim.schedule_wrap(function()
+	AsyncCMD.quickfix(prg, {
+		winnr = winnr,
+		append = append,
+		on_stdout = function(invoke, lines)
+			invoke({}, 'a', { efm = gfm, lines = lines })
+		end,
+		on_exit = function(qf)
 			qf:window()
 			if bang then
 				qf:jump_first()
 			end
-		end)
+		end,
 	})
 end
 

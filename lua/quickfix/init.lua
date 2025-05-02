@@ -74,7 +74,7 @@ end
 
 ---@param height integer?
 function Location:window(height)
-	return vim.cmd.cwindow({ nargs = { height } })
+	return vim.cmd.lwindow({ nargs = { height } })
 end
 
 ---@param nr integer?

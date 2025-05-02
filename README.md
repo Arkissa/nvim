@@ -23,4 +23,5 @@ git clone --recurse-submodules -b v3 git@github.com:Arkissa/nvim.git ~/.config/n
 - [ ] Better built-in formatter.
 - [x] Better code action.
 - [ ] Better engineering support for different programming language e.g code generator and lint.
+  - [x] lintprg api.
 - [ ] ~~Make snippets of code~~ Postponed this the neovim not yet ready.
