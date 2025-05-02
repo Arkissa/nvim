@@ -125,7 +125,7 @@ local function float_open(winnr, nsid)
 			return
 		end
 
-		local lines = vim.api.nvim_buf_get_lines(args.bufnr, pos.lnum, pos.end_row, true)
+		local lines = vim.api.nvim_buf_get_lines(args.bufnr, pos.lnum, pos.end_row+1, true)
 		if vim.tbl_isempty(lines) then
 			return
 		end
