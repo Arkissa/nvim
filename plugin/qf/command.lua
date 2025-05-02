@@ -1,4 +1,3 @@
-local Finder = require "find"
 vim.api.nvim_create_user_command(
 	"Vimgrep",
 	function(args)
@@ -42,8 +41,7 @@ vim.api.nvim_create_user_command(
 
 vim.api.nvim_create_user_command("Find",
 	function(args)
-		Finder():find(args.args)
-		vim.cmd.copen()
+		require "finder".find(args.args)
 	end,
 	{
 		nargs = 1,

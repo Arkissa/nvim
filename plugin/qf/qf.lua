@@ -1,8 +1,7 @@
-local qf = Augroup("qf", { clear = false })
 vim.o.quickfixtextfunc = "v:lua.require'quickfix.textfunc'.func"
 
 Autocmd("QuickFixCmdPost", {
-	group = qf,
+	group = Augroup("qf", { clear = false }),
 	callback = function()
 		local ok = pcall(vim.cmd.lwindow)
 		if not ok then
