@@ -54,5 +54,8 @@ vim.opt.wildignore:append {
 	'**/pack/**',
 	'**/bin/**',
 }
+opt.updatetime = 300
+opt.completeopt = { "menuone", "noinsert", "noselect", "fuzzy", "popup", "preview" }
+opt.cia = { "kind", "abbr", "menu" }
 
 g.mapleader = k'<SPACE>'

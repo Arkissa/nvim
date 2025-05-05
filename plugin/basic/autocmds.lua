@@ -1,6 +1,8 @@
 local myvimrc = Augroup("MYVIMRC", {
 	clear = false,
 })
+local pumvisible = vim.fn.pumvisible
+local feedkeys = vim.api.nvim_feedkeys
 
 Autocmd("BufReadPost", {
 	group = myvimrc,
@@ -42,9 +44,38 @@ Autocmd("TermEnter", {
 Autocmd("BufEnter", {
 	group = myvimrc,
 	nested = true,
-	callback = function(args)
-		if vim.fn.winnr('$') < 2 and vim.bo[args.buf].buftype ~= '' then
-			vim.cmd "q"
+	callback = function()
+		local ok = vim.iter(vim.api.nvim_list_wins())
+			:all(function(winnr)
+				local bufnr = vim.api.nvim_win_get_buf(winnr)
+				return vim.bo[bufnr].buftype ~= ""
+			end)
+
+		if ok then
+			vim.cmd "quitall"
 		end
+	end
+})
+
+Autocmd("InsertCharPre", {
+	group = myvimrc,
+	desc = "Autocompletion omnifunc.",
+	callback = function()
+		if pumvisible() == 1 or vim.fn.state 'm' == 'm'
+		then
+			return
+		end
+
+		local char = vim.v.char
+
+		if char:match("[^%w.:]") then
+			return
+		end
+
+		if vim.opt.omnifunc:get() == "" then
+			return
+		end
+
+		feedkeys(vim.keycode "<C-X><C-O>", "im", false)
 	end
 })
