@@ -79,3 +79,17 @@ Autocmd("InsertCharPre", {
 		feedkeys(vim.keycode "<C-X><C-O>", "im", false)
 	end
 })
+
+Autocmd("CompleteChanged", {
+	group = myvimrc,
+	desc = "highlight preview window",
+	callback = function()
+		local info = vim.fn.complete_info({ "selected" })
+		if info.preview_bufnr and vim.bo[info.preview_bufnr].filetype == "" then
+			vim.bo[info.preview_bufnr].filetype = "markdown"
+			vim.wo[info.preview_winid].conceallevel = 2
+			vim.wo[info.preview_winid].concealcursor = "niv"
+		end
+	end,
+})
+
