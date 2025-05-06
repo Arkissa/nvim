@@ -1,12 +1,13 @@
 if not vim.fn.executable("ibus") then
 	return
 end
+local im = Augroup("im", {clear = false})
 
 ---@type string
 local last_mode = ""
 
-Autocmd("ModeChanged", {
-	pattern = "i:n",
+Autocmd("InsertLeave", {
+	group = im,
 	callback = function ()
 		local object = vim.system({ "ibus", "engine" }):wait()
 		if object.code ~= 0 then
@@ -22,8 +23,8 @@ Autocmd("ModeChanged", {
 	end
 })
 
-Autocmd("ModeChanged", {
-	pattern = "n:i",
+Autocmd("InsertEnter", {
+	group = im,
 	callback = function ()
 		if last_mode ~= "" then
 			vim.system({ "ibus", "engine", last_mode }):wait()
