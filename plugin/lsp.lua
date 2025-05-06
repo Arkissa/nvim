@@ -30,8 +30,12 @@ local kind_icon = {
 	{ menu = 'TypeParameter', kind = '', kind_hlgroup = 'Type' },
 }
 
-vim.lsp.config('*', {
-	on_attach = function(client, bufnr)
+Autocmd("LspAttach", {
+	group = Augroup("lsp", {clear = false}),
+	callback = function(args)
+		local bufnr = args.buf
+		---@type vim.lsp.Client
+		local client = assert(vim.lsp.get_client_by_id(args.data.client_id))
 		if client:supports_method(methods.textDocument_documentHighlight, bufnr) then
 			local id = Augroup("doc.highlight", { clear = false })
 			Autocmd({ 'CursorHold', 'CursorHoldI' }, {
@@ -72,35 +76,20 @@ vim.lsp.config('*', {
 		end
 
 		if client:supports_method(methods.textDocument_completion) then
-			local chars = client.server_capabilities.completionProvider.triggerCharacters
-			if chars then
-				for i = string.byte('a'), string.byte('z') do
-					if not vim.list_contains(chars, string.char(i)) then
-						table.insert(chars, string.char(i))
-					end
-				end
-
-				for i = string.byte('A'), string.byte('Z') do
-					if not vim.list_contains(chars, string.char(i)) then
-						table.insert(chars, string.char(i))
-					end
-				end
-			end
 			vim.lsp.completion.enable(true, client.id, bufnr, {
-				autotrigger = true,
 				convert = function(item)
 					local m = kind_icon[item.kind]
-					return vim.tbl_extend('force', item, {
+					return {
 						abbr = item.label,
 						kind = m.kind,
 						menu = ("[%s]"):format(m.menu),
 						kind_hlgroup = m.kind_hlgroup,
-					})
+					}
 				end
 			})
 		end
 	end
-} --[[@as vim.lsp.Config]])
+})
 
 local lsps = vim.iter(vim.api.nvim_get_runtime_file("lsp/*.lua", true))
 	:map(function(filename)
