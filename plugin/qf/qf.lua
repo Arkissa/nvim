@@ -1,11 +1,43 @@
 vim.o.quickfixtextfunc = "v:lua.require'quickfix.textfunc'.func"
 
 Autocmd("QuickFixCmdPost", {
-	group = Augroup("qf", { clear = false }),
-	callback = function()
-		local ok = pcall(vim.cmd.lwindow)
-		if not ok then
-			vim.cmd.cwindow()
-		end
-	end
+	pattern = {
+		"make",
+		"grep",
+		"grepadd",
+		"vimgrep",
+		"vimgrepadd",
+		"helpgrep",
+		"cfile",
+		"cgetfile",
+		"caddfile",
+		"cexpr",
+		"cgetexpr",
+		"caddexpr",
+		"cbuffer",
+		"cgetbuffer",
+		"caddbuffer"
+	},
+	command = "cwindow",
+})
+
+Autocmd("QuickFixCmdPost", {
+	pattern = {
+		"lmake",
+		"lgrep",
+		"lgrepadd",
+		"lvimgrep",
+		"lvimgrepadd",
+		"lfile",
+		"lgetfile",
+		"laddfile",
+		"lhelpgrep",
+		"lexpr",
+		"lgetexpr",
+		"laddexpr",
+		"lbuffer",
+		"lgetbuffer",
+		"laddbuffer"
+	},
+	command = "lwindow"
 })
