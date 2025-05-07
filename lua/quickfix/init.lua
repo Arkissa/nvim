@@ -23,10 +23,9 @@ function Quickfix:setlist(list, action, what)
 	return vim.fn.setqflist(list, action)
 end
 
----
 ---@param nr integer?
 function Quickfix:jump_first(nr)
-	return vim.cmd.cc({ nargs = { nr }, mods = { silent = true } })
+	pcall(vim.cmd.cc, { nargs = { nr }, mods = { silent = true } })
 end
 
 ---@param height integer?
@@ -79,7 +78,7 @@ end
 
 ---@param nr integer?
 function Location:jump_first(nr)
-	return vim.cmd.ll({ nargs = { nr }, mods = { silent = true } })
+	pcall(vim.cmd.ll, { nargs = { nr }, mods = { silent = true } })
 end
 
 ---@return boolean
