@@ -22,6 +22,8 @@ return {
 			})
 			-- refresh codelens right now!
 			vim.lsp.codelens.refresh()
+			-- use formatprg
+			vim.bo[bufnr].formatexpr = ""
 		end
 	end,
 	reuse_client = function()
@@ -30,11 +32,13 @@ return {
 	end,
 	settings = {
 		haskell = {
-			formattingProvider = "fourmolu",
 			maxCompletions = 40,
 			checkParents = "CheckOnSave",
 			checkProject = true,
 			plugin = {
+				-- highlight tokens
+				semanticTokens = { globalOn = true },
+				stan = { globalOn = true },
 				eval = {
 					config = { exception = true }
 				},
@@ -45,11 +49,7 @@ return {
 					mode = { exported = true }
 				},
 				hlint = {
-					config = {
-						flags = {
-							"--show"
-						}
-					}
+					diagnosticsOn = false,
 				},
 				fourmolu = {
 					config = { external = true }

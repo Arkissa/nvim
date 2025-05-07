@@ -4,6 +4,7 @@ opt.list = false
 opt.expandtab = true
 opt.tabstop = 4
 opt.shiftwidth = 4
+opt.formatprg = "hindent --indent-size 4"
 
 local setb = vim.api.nvim_buf_set_var
 
