@@ -10,6 +10,7 @@ local setb = vim.api.nvim_buf_set_var
 local format = {
 	[[%-G]],
 	[[%-G%\\d%\\+\ hints]],
+	[[%-GNo hints]],
 	[[%N%f:%l:%c:\ Suggestion:\ %m]],
 	[[%N%f:%l:%c-%k:\ Suggestion:\ %m]],
 	[[%I%f:%l:%c:\ Ignore:\ %m]],
@@ -21,5 +22,5 @@ local format = {
 	[[%Z]],
 }
 
-setb(0, "lintprg", "hlint -s")
+setb(0, "lintprg", "hlint")
 setb(0, "lintformat", vim.iter(format):join(','))
