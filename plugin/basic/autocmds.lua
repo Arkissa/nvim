@@ -6,17 +6,16 @@ local feedkeys = vim.api.nvim_feedkeys
 
 Autocmd("BufReadPost", {
 	group = myvimrc,
-	-- must be wait for filetype seted to run
-	callback = vim.schedule_wrap(function ()
+	callback = function(args)
 		local line = vim.fn.line([['"]])
-		local filetype = vim.opt.filetype:get()
-		if  line > 1
+		local filetype = vim.bo[args.buf].filetype
+		if line > 1
 			and line <= vim.fn.line("$")
-			and not vim.tbl_contains({'xxd', 'gitrebase', 'tutor', 'commit', 'help'}, filetype)
+			and not vim.list_contains({ 'xxd', 'gitrebase', 'tutor', 'commit', 'help' }, filetype)
 		then
 			vim.api.nvim_input([[g`"]])
 		end
-	end)
+	end
 })
 
 Autocmd("TextYankPost", {

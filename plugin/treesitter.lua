@@ -15,6 +15,7 @@ require 'nvim-treesitter.configs'.setup {
 		"gomod",
 		"luadoc",
 		"regex",
+		"haskell",
 		"make",
 		"printf",
 		"http",
@@ -35,7 +36,7 @@ require 'nvim-treesitter.configs'.setup {
 
 	highlight = {
 		enable = true,
-		-- disable = { 'markdown' },
+		disable = { 'haskell' },
 	},
 	incremental_selection = {
 		enable = true,
@@ -49,4 +50,25 @@ require 'nvim-treesitter.configs'.setup {
 	indent = {
 		enable = true,
 	},
+	textobjects = {
+		select = {
+			enable = true,
+			keymaps = {
+				["af"] = "@function.outer",
+				["if"] = "@function.inner",
+				["ac"] = "@class.outer",
+				["ic"] = "@class.inner",
+			},
+		},
+		move = {
+			enable = true,
+			set_jumps = true,
+			goto_next_start = {
+				["[f"] = "@function.outer"
+			},
+			goto_previous_start = {
+				["]f"] = "@function.outer"
+			}
+		}
+	}
 }

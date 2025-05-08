@@ -22,8 +22,6 @@ return {
 			})
 			-- refresh codelens right now!
 			vim.lsp.codelens.refresh()
-			-- use formatprg
-			vim.bo[bufnr].formatexpr = ""
 		end
 	end,
 	reuse_client = function()
@@ -32,6 +30,7 @@ return {
 	end,
 	settings = {
 		haskell = {
+			formattingProvider = "fourmolu",
 			maxCompletions = 40,
 			checkParents = "CheckOnSave",
 			checkProject = true,

@@ -28,3 +28,6 @@
 [submodule "pack/haskell/start/haskell-vim"]
 	path = pack/haskell/start/haskell-vim
 	url = https://github.com/RicardoKovd/haskell-vim
+[submodule "pack/treesitter/start/nvim-treesitter-textobjects"]
+	path = pack/treesitter/start/nvim-treesitter-textobjects
+	url = https://github.com/nvim-treesitter/nvim-treesitter-textobjects.git
