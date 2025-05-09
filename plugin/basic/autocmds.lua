@@ -4,20 +4,6 @@ local myvimrc = Augroup("MYVIMRC", {
 local pumvisible = vim.fn.pumvisible
 local feedkeys = vim.api.nvim_feedkeys
 
-Autocmd("BufReadPost", {
-	group = myvimrc,
-	callback = function(args)
-		local line = vim.fn.line([['"]])
-		local filetype = vim.bo[args.buf].filetype
-		if line > 1
-			and line <= vim.fn.line("$")
-			and not vim.list_contains({ 'xxd', 'gitrebase', 'tutor', 'commit', 'help' }, filetype)
-		then
-			vim.api.nvim_input([[g`"]])
-		end
-	end
-})
-
 Autocmd("TextYankPost", {
 	group = myvimrc,
 	callback = function()
