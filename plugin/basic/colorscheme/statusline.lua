@@ -7,9 +7,6 @@ local conditions = {
 	hide_in_width = function()
 		return vim.fn.winwidth(0) > 80
 	end,
-	check_git_workspace = function()
-		return vim.fs.root(vim.fn.expand('%:p:h'), ".git")
-	end,
 }
 
 -- Config
@@ -51,31 +48,7 @@ end
 
 ins_left { 'mode' }
 
-ins_left {
-	function()
-		local msg = ''
-		local bufnr = vim.api.nvim_get_current_buf()
-		local clients = vim.lsp.get_clients({ bufnr = bufnr })
-		if vim.tbl_isempty(clients) then
-			return msg
-		end
-
-		local client = clients[1]
-		local cfg = client.config
-
-		---@cast cfg vim.lsp.Config
-		if vim.tbl_contains(cfg.filetypes, vim.bo[bufnr].filetype) then
-			msg = client.name
-		end
-
-		return msg
-	end,
-	icon = ' LSP:',
-	color = {
-		fg = Colors.lavender,
-		gui = 'bold',
-	},
-}
+ins_left { 'lsp_status' }
 
 ins_left {
 	'branch',
