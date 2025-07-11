@@ -25,3 +25,26 @@ git clone --recurse-submodules -b v3 git@github.com:Arkissa/nvim.git ~/.config/n
 - [ ] Better engineering support for different programming language e.g code generator and lint.
   - [x] lintprg api.
 - [ ] ~~Make snippets of code~~ Postponed this the neovim not yet ready.
+- [ ] unicode input method
+- [ ] Haskell dev environment
+  - [ ] Hoogle search.
+  - [ ] fix cabal hightlight document.
+  - [ ] fix hlint jump to strange page
+  - [ ] better ghci repl
+  - [ ] better ghci DEBUG `maybe TermDebug?`
+  - [ ] better format
+  - [ ] better code fold
+  - [ ] better indent
+  - [ ] better ghci interaction
+    - [ ] hover visual select expression
+  - [ ] better quickfix errorformat api for vim
+  - [ ] edit project file
+  - [ ] support refactor
+  - [ ] support Unit test
+  - [ ] support Code Coverage
+  - [ ] support cabalfmt
+  - [ ] support ctags
+  - [ ] support Haddocks
+  - [ ] support profile
+  - [ ] haskell textobject
+  - [ ] haskell toolchains

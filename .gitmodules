@@ -22,12 +22,12 @@
 [submodule "pack/utils/start/cmdalias"]
 	path = pack/utils/start/cmdalias
 	url = https://github.com/vim-scripts/cmdalias.vim.git
-[submodule "pack/explorer/start/oil.nvim"]
-	path = pack/explorer/start/oil.nvim
-	url = https://github.com/RicardoKovd/oil.nvim.git
 [submodule "pack/haskell/start/haskell-vim"]
 	path = pack/haskell/start/haskell-vim
 	url = https://github.com/RicardoKovd/haskell-vim
 [submodule "pack/treesitter/start/nvim-treesitter-textobjects"]
 	path = pack/treesitter/start/nvim-treesitter-textobjects
 	url = https://github.com/nvim-treesitter/nvim-treesitter-textobjects.git
+[submodule "pack/explorer/start/oil.nvim"]
+	path = pack/explorer/start/oil.nvim
+	url = https://github.com/stevearc/oil.nvim

@@ -15,3 +15,5 @@ init
 gitsubmodule
 textobject
 nvim
+paramumen
+compiletime

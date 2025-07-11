@@ -31,7 +31,7 @@ vim.g.under_path = function(real_path)
 			return nil
 		end
 
-		return vim.fs.relpath(clients[1].root_dir, path)
+		return vim.fs.relpath(clients[1].root_dir or "", path)
 	end
 
 	---@param path string

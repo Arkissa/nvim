@@ -24,9 +24,22 @@ return {
 			vim.lsp.codelens.refresh()
 		end
 	end,
-	reuse_client = function()
-		local bufnr = vim.api.nvim_get_current_buf()
-		return not vim.tbl_contains({ "cabal", "cabalproject" }, vim.bo[bufnr].filetype)
+	reuse_client = function(client)
+		local filetypes = {}
+		for bufnr, valid in pairs(client.attached_buffers) do
+			if valid then
+				table.insert(filetypes,
+					vim.api.nvim_get_option_value("filetype", { buf = bufnr }))
+			end
+		end
+
+		local types = Set(unpack(filetypes))
+		local hls_types = Set("cabal", "cabalproject", "haskell")
+		if #types > #hls_types then
+			return types >= hls_types
+		end
+
+		return not (types <= hls_types)
 	end,
 	settings = {
 		haskell = {

@@ -10,4 +10,5 @@ Autocmd = vim.api.nvim_create_autocmd
 Buffer = require "buffers"
 Path = require "path"
 Colors = require "colors"
+Set = require "set"
 vim.cmd.packadd "cfilter"

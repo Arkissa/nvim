@@ -19,18 +19,13 @@ opt.fillchars = {
 	eob = " ",
 	lastline = "@",
 }
-opt.list = true
 opt.showbreak = "↪ "
-opt.listchars = {
-	tab = '│ ',
-	trail = '·',
-}
 opt.shiftwidth = 4
 opt.softtabstop = 4
 opt.signcolumn = "yes:1"
 opt.tabstop = 4
-opt.scrolloff = 60
-opt.laststatus = 3
+opt.scrolloff = 99
+opt.laststatus = 2
 opt.smartcase = true
 opt.ignorecase = true
 opt.wildmenu = true
